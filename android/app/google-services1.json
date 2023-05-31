@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "307548427232",
+    "project_id": "edmsa-60a5a",
+    "storage_bucket": "edmsa-60a5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307548427232:android:0939c485311255ae1a1185",
+        "android_client_info": {
+          "package_name": "com.logineo.edm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "307548427232-pittdia10vhs0ltue5tnmsg1tn81q7lp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWkgHLKWts7wCj_HWo64MnezHi9Lcs97Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "307548427232-pittdia10vhs0ltue5tnmsg1tn81q7lp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
