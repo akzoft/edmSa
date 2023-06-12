@@ -1,16 +1,94 @@
 
-import { FC } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colors } from "../../../libs";
+import { FC, useEffect, useRef, useState } from "react";
+import { Button, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { IDevisReq, IVille, RootState, colors, getVilles, handleChangeMobile } from "../../../libs";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import { Picker } from "@react-native-picker/picker";
+import { useDispatch, useSelector } from "react-redux";
+import Geolocation from '@react-native-community/geolocation';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Finalisation: FC<any> = ({ tabs, activeTab, setActiveTab }) => {
-    const handleNext = () => {
-        setActiveTab((prevTab: number) => (prevTab < tabs.length - 1 ? prevTab + 1 : prevTab));
+type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, setActiveTab: any, handleSendDevis: any, inputs: IDevisReq, setInputs: any, typeVille: any, setTypeVille: any, typeCommune: any, setTypeCommune: any, typeQuartier: any, setTypeQuartier: any }
+const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, handleSendDevis, inputs, setInputs, typeVille, setTypeVille, typeCommune, setTypeCommune, typeQuartier, setTypeQuartier }) => {
+    const pickerRef = useRef<any>();
+    const { auth } = useSelector((state: RootState) => state?.user)
+    const { villes } = useSelector((state: RootState) => state?.ville)
+    const [cities, setCities] = useState<IVille[]>();
+    const dispatch = useDispatch<any>()
+
+    useEffect(() => {
+        setCities(villes)
+    }, [villes]);
+
+    useEffect(() => {
+        if (auth)
+            dispatch(getVilles(auth?.accessToken))
+    }, [dispatch, auth]);
+
+    useEffect(() => {
+        AsyncStorage.getItem("quit").then((data: any) => {
+            let _inputs: IDevisReq = JSON.parse(data)
+            if (_inputs !== null && _inputs !== undefined) {
+                setInputs(_inputs)
+                setTypeVille(_inputs?.ville)
+            }
+        }).catch(err => console.log(err));
+    }, []);
+
+
+    useEffect(() => {
+        AsyncStorage.getItem("quit").then((data: any) => {
+            let _inputs: IDevisReq = JSON.parse(data)
+            if (_inputs?.typeCompteur !== "") {
+                inputs.ville = typeVille
+                on_cancel_store_data_to_asyncstore(inputs)
+            }
+        })
+    }, [typeVille, inputs]);
+
+    const on_cancel_store_data_to_asyncstore = async (data: IDevisReq) => {
+        try {
+            await AsyncStorage.setItem("quit", JSON.stringify(data))
+        } catch (error) {
+            console.error('Error writing to JSON file:', error);
+        }
     };
+
+
+
+
+
 
     const handlePrevious = () => {
         setActiveTab((prevTab: number) => (prevTab > 0 ? prevTab - 1 : prevTab));
+        scrollViewRef.current.scrollTo({ y: 0, animated: true })
     };
+
+
+    const handleSetLocation = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Permission de géolocalisation',
+                    message: 'L\'application a besoin d\'accéder à votre position pour fonctionner.',
+                    buttonPositive: 'OK',
+                    buttonNegative: 'Annuler',
+                }
+            );
+
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                // L'autorisation a été accordée, vous pouvez maintenant utiliser la géolocalisation
+                Geolocation.getCurrentPosition(info => setInputs((old: IDevisReq) => { return { ...old, localisation: info.coords.latitude + "," + info.coords.longitude } }));
+            } else {
+                // L'autorisation a été refusée
+                Geolocation.getCurrentPosition(info => setInputs((old: IDevisReq) => { return { ...old, localisation: "" } }));
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    };
+
 
     return (
         <View>
@@ -24,34 +102,81 @@ const Finalisation: FC<any> = ({ tabs, activeTab, setActiveTab }) => {
             </View>
 
             <View>
-                <Text style={[styles.title, { marginVertical: 10 }]}>4. Notez Bien</Text>
+                <Text style={[styles.title, { marginVertical: 10 }]}>5. Adresse principale</Text>
 
-
-                <View style={{ paddingHorizontal: 10, gap: 15 }}>
-                    <View>
-                        <Text>4.1 Le compteur est une propriété d'EDM et ne peut être déplacé sous aucun prétexte.</Text>
+                <View style={{ marginTop: 15, flex: 4 }}>
+                    <Text style={styles.label}>Ville <Text style={styles.required}>*</Text></Text>
+                    <View style={[styles.input,]}>
+                        <Picker
+                            ref={pickerRef}
+                            selectedValue={typeVille}
+                            onValueChange={(val) => setTypeVille(val)}>
+                            <Picker.Item label="Votre ville" value="" style={{ color: "gray" }} />
+                            {cities?.map((ville: IVille) => (<Picker.Item key={ville?.id} label={ville?.name} value={ville?.id} />))}
+                        </Picker>
                     </View>
-
-                    <View>
-                        <Text>4.1 Aucun dévis n'est valable au delà des périodes suivant:</Text>
-                        <View style={{ paddingHorizontal: 10 }}>
-                            <Text>-Devis de branchement simple (6) mois</Text>
-                            <Text>-Devis de branchement avec extension trois (3) mois.</Text>
-                        </View>
-                    </View>
-
-
                 </View>
 
-                <Text style={[styles.title, { marginVertical: 10 }]}>5. Validation de la demande</Text>
+
+                <View style={{ flexDirection: "row", gap: 5 }}>
+
+                    <View style={{ marginTop: 15, flex: 4 }}>
+                        <Text style={styles.label}>Commune <Text style={styles.required}>*</Text></Text>
+                        <TextInput placeholder='Commune' style={styles.input} value={inputs?.commune ? inputs.commune?.toString() : ""} onChangeText={text => handleChangeMobile("commune", text, setInputs)} />
+                    </View>
+
+                    <View style={{ marginVertical: 15, flex: 4 }}>
+                        <Text style={styles.label}>Quartier <Text style={styles.required}>*</Text></Text>
+                        <TextInput placeholder='Quartier' style={styles.input} value={inputs?.quartier ? inputs.quartier?.toString() : ""} onChangeText={text => handleChangeMobile("quartier", text, setInputs)} />
+                    </View>
+                </View>
+
+                <View style={[styles.form_item, { marginBottom: 15 }]}>
+                    <View style={{ flex: 1 }}>
+                        <Text>Rue</Text>
+                        <TextInput placeholder='Rue' style={styles.input} value={inputs?.rue ? inputs.rue?.toString() : ""} onChangeText={text => handleChangeMobile("rue", text, setInputs)} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text>Porte</Text>
+                        <TextInput placeholder='Porte' keyboardType="number-pad" style={styles.input} value={inputs?.porte ? inputs.porte?.toString() : ""} onChangeText={text => handleChangeMobile("porte", text, setInputs)} />
+                    </View>
+                </View>
+
+                <View style={[styles.form_item, { marginBottom: 15 }]}>
+                    <View style={{ flex: 1 }}>
+                        <Text>Lot</Text>
+                        <TextInput placeholder='Lot' style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text>Proche de</Text>
+                        <TextInput placeholder='Proche de' style={styles.input} value={inputs?.procheDe ? inputs.procheDe?.toString() : ""} onChangeText={text => handleChangeMobile("procheDe", text, setInputs)} />
+                    </View>
+                </View>
+
+
+                <View style={[styles.form_item, { alignItems: "center", justifyContent: "center" }]}>
+                    <View style={{ flex: 10 }}>
+                        <Text>Localisation (latitude,longitude)</Text>
+                        <View style={[styles.input, { height: 48, justifyContent: "center" }]}>
+                            <Text >{inputs?.localisation ? inputs?.localisation : "latitude,longitude"}</Text>
+                        </View>
+
+                        {/* <TextInput placeholder='Lattitude,Longitude' style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} /> */}
+                    </View>
+
+                    <TouchableOpacity onPress={handleSetLocation} activeOpacity={0.7} style={{ backgroundColor: colors.main, alignItems: "center", justifyContent: "center", height: 48, width: 48, marginTop: 20, borderRadius: 5 }}>
+                        <MaterialIcons name="my-location" size={28} color={colors.white} />
+                    </TouchableOpacity>
+                </View>
+
             </View>
 
-            <View style={{ flexDirection: "row", gap: 10 }}>
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
                 <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 3 }]} >
                     <Text style={styles.button_text}>Précedent</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity disabled={activeTab === tabs.length - 1} activeOpacity={0.7} style={[styles.button, { flex: 9 }]} >
+                <TouchableOpacity onPress={handleSendDevis} activeOpacity={0.7} style={[styles.button, { flex: 9 }]} >
                     <Text style={styles.button_text}>Valider et envoyer la demande</Text>
                 </TouchableOpacity>
             </View>
@@ -64,6 +189,10 @@ export default Finalisation
 
 const styles = StyleSheet.create({
     title: { fontSize: 18, color: colors.black },
+    label: { marginVertical: 4, paddingLeft: 10 },
+    form_item: { flexDirection: "row", gap: 5, marginVertical: 5 },
+    input: { borderWidth: 0.5, borderColor: colors.dark, borderRadius: 5, paddingLeft: 15, color: colors.main },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
-    button_text: { textAlign: "center", fontWeight: "bold", color: colors.white }
+    button_text: { textAlign: "center", fontWeight: "bold", color: colors.white },
+    required: { color: colors.warning },
 })

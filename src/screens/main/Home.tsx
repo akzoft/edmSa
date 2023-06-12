@@ -1,4 +1,4 @@
-import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Animated, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import Entypo from "react-native-vector-icons/Entypo"
 import Fontisto from "react-native-vector-icons/Fontisto"
@@ -11,10 +11,14 @@ import { RootState, colors, css, deconnexion, getAllActualites, getAllInformatio
 import { ActualitySwiper, HomeCard } from '../../components'
 import { Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import { useIsFocused } from '@react-navigation/native'
 
 const Home = () => {
     const [showModal, setShowModal] = useState<boolean>(false)
     const dispatch = useDispatch<any>();
+    const isFocused = useIsFocused();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const viewRef = useRef(null);
     const { auth } = useSelector((state: RootState) => state?.user)
 
     useEffect(() => {
@@ -24,14 +28,34 @@ const Home = () => {
         }
     }, [auth, dispatch])
 
+    //fade in animation
+    useEffect(() => {
+        if (isFocused) {
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [fadeAnim, isFocused]);
+
+
+
     const handleDisconnect = () => {
         dispatch(deconnexion())
     }
 
+
     return (
-        <View style={css.home.container}>
+        <Animated.View ref={viewRef} style={[css.home.container, { opacity: fadeAnim, flex: 1 }]}>
             <StatusBar barStyle={"light-content"} backgroundColor={colors.main} />
-            <View style={css.home.content}>
+            <View style={[css.home.content]}>
 
                 <View style={css.home.infos}>
                     <View style={css.home.linebox}>
@@ -53,16 +77,18 @@ const Home = () => {
 
 
                         {showModal &&
-                            <View style={styles.modal}>
-                                <TouchableOpacity style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                                    <FontAwesome5 name="user-edit" size={20} />
-                                    <Text>Modifier</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={handleDisconnect} style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                                    <AntDesign name="logout" size={20} />
-                                    <Text>Déconnexion</Text>
-                                </TouchableOpacity>
-                            </View>
+                            <TouchableWithoutFeedback onAccessibilityAction={() => setShowModal(false)} >
+                                <View style={styles.modal}>
+                                    <TouchableOpacity style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                        <FontAwesome5 name="user-edit" size={20} />
+                                        <Text>Modifier</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={handleDisconnect} style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                        <AntDesign name="logout" size={20} />
+                                        <Text>Déconnexion</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableWithoutFeedback>
                         }
                     </View>
                 </View>
@@ -76,14 +102,14 @@ const Home = () => {
                         <HomeCard link='facture' Component={MaterialCommunityIcons} icon='cellphone-check' iconSize={40} title={'Facture'} style={css.home.home_card_container} />
                         <HomeCard link='isago' Component={Fontisto} icon='list-2' iconSize={40} title={'ISAGO'} style={css.home.home_card_container} type='isago' />
                         <HomeCard link='devis' Component={Fontisto} icon='list-2' iconSize={40} title={'Devis'} style={css.home.home_card_container} />
-                        <HomeCard link='' Component={Octicons} icon='history' iconSize={40} title={'Historique'} style={css.home.home_card_container} />
+                        <HomeCard link='historique_stk' Component={Octicons} icon='history' iconSize={40} title={'Historique'} style={css.home.home_card_container} />
                         <HomeCard link='actualite' Component={Entypo} icon='calendar' iconSize={40} title={'Actualité'} style={css.home.home_card_container} />
                         <HomeCard link='infos' Component={Ionicons} icon='information' iconSize={40} title={'Infos'} style={css.home.home_card_container} type='info' />
                     </View>
                     <View style={{ height: 60 }} />
                 </ScrollView>
             </View>
-        </View >
+        </Animated.View>
     )
 }
 

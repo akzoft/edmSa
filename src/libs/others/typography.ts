@@ -13,4 +13,6 @@ export const colors = {
     warning: "#E4A11B",
     info: "#54B4D3",
 
+    wheat: "wheat"
+
 }

@@ -6,7 +6,7 @@ interface IAction { type: string; payload: string | boolean | IInfoRes | IInfoRe
 
 const infoReducer = (state = initial, action: IAction): IInfoStore => {
     switch (action.type) {
-        case "loading": return { ...state, loading: true, errors: null }
+        case "inf_loading": return { ...state, loading: true, errors: null }
 
         case "errors": return { ...state, loading: false, errors: action.payload }
 

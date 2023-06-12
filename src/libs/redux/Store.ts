@@ -4,8 +4,19 @@ import userReducer from './reducers/user.reducer';
 import infoReducer from './reducers/information.reducer';
 import actualiteReducer from './reducers/actualite.reducer';
 import notifReducer from './reducers/notification.reducer';
+import villeReducer from './reducers/ville.reducer';
+import devisReducer from './reducers/devis.reducer';
+import factureReducer from './reducers/facture.reducer';
+import isagoReducer from './reducers/isago.reducer';
+import compteurReducer from './reducers/compteur.reducer';
 
-const reducers = combineReducers({ user: userReducer, info: infoReducer, actu: actualiteReducer, notif: notifReducer })
+const reducers = combineReducers({
+    user: userReducer,
+    info: infoReducer, actu: actualiteReducer,
+    notif: notifReducer, ville: villeReducer,
+    devis: devisReducer, facture: factureReducer,
+    isago: isagoReducer, compteur: compteurReducer
+})
 const Store = legacy_createStore(reducers, applyMiddleware(thunk))
 
 export type RootState = ReturnType<typeof reducers>;

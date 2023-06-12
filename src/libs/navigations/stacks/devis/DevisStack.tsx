@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useDispatch } from 'react-redux'
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
-import { DemandeDevis, Devis, PaiementISAGO, RechercheCompteurISAGO } from '../../../../screens'
+import { DemandeDevis, Devis, DevisDetails, DevisList, PaiementDevis, PaiementISAGO, PayerUnDevis, RechercheCompteurISAGO } from '../../../../screens'
 import { checking } from '../../../redux/actions/user.action'
 import { Header } from '../../../../components'
 
@@ -25,8 +25,12 @@ const DevisStack: FC<{ route: any }> = ({ route }) => {
 
     return (
         <stack.Navigator >
-            <stack.Screen name="devis_home" component={Devis} options={{ title: "Devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} /> }} />
-            <stack.Screen name="demande_devis" component={DemandeDevis} options={{ title: "Nouveau devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} /> }} />
+            <stack.Screen name="devis_home" component={Devis} options={{ title: "Devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="demande_devis" component={DemandeDevis} options={{ title: "Nouveau devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="devis_list" component={DevisList} options={{ title: "Liste de devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="devis_paiement" component={PaiementDevis} options={{ title: "Paiement devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="devis_details" component={DevisDetails} options={{ title: "Details du devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="payer_un_devis" component={PayerUnDevis} options={{ title: "Payer un devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
         </stack.Navigator>
 
     )

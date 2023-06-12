@@ -14,6 +14,7 @@ const Login: FC<props> = ({ navigation }) => {
     const [error, setError] = useState<string>()
     const { errors, loading } = useSelector((state: RootState) => state?.user)
 
+
     //display errors if exist
     useEffect(() => {
         if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Informations', text2: errors || error, }); setError(""); dispatch({ type: "reset_errors" }) }

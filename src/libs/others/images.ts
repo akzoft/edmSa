@@ -10,4 +10,5 @@ export const images = {
     n5: require("./assets/n5.jpg"),
     vitepay: require("./assets/vp_logo.png"),
     profile_avatar: require("./assets/profile.png"),
+    compteur: require("./assets/compteur.png")
 }

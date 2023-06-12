@@ -23,6 +23,7 @@ const home = StyleSheet.create({
         flex: 1, backgroundColor: colors.main, marginBottom: -40
     },
     infos: { flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10, borderRadius: 10, width: "90%", alignSelf: "center", marginTop: "-15%" },
+    // infos: { flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10, borderRadius: 10, width: "90%", alignSelf: "center", position: "absolute", top: "-5%" },
     linebox: { width: "100%", position: "absolute", top: "-17%", alignItems: "center" },
     line: { height: 10, width: "100%", borderTopRightRadius: 30, borderTopLeftRadius: 30, backgroundColor: colors.red, alignSelf: "center" },
     info_card: { width: "100%", flexDirection: "row", justifyContent: "space-between" },

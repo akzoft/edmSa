@@ -37,7 +37,7 @@ const NotificationCard: FC<props> = ({ notif, handleLongPress, setNotif }) => {
                     <View>
                         <Text style={{ fontSize: 18, fontWeight: "bold", color: colors.black, marginBottom: 10 }}>{notif?.title?.slice(0, 30)}{notif?.title?.length > 30 && "..."}</Text>
                         <Text>{notif?.message?.slice(0, 120)}{notif?.message?.length > 120 && "..."}</Text>
-                        <Text style={{ fontSize: 12, fontStyle: "italic", alignSelf: "flex-end", }}>{moment(notif?.createdAt).fromNow()}</Text>
+                        <Text style={{ fontSize: 12, fontStyle: "italic", alignSelf: "flex-end", }}>{moment(notif?.updatedAt).fromNow()}</Text>
                     </View>
                 </View>
 

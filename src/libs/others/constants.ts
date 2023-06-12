@@ -1,0 +1,5 @@
+export const type_compteur = [{ key: 1, value: "Compteur Conventionnel" }, { key: 2, value: "Compteur ISAGO" }]
+export const type_demande = [{ key: 1, value: "Nouveaux" }, { key: 2, value: "Mutation/Aug./Dim./Chang. Puissance" }, { key: 3, value: "Réabonnement" }]
+export const usage = [{ key: 1, value: "Domestique" }, { key: 2, value: "Commercial" }]
+export const civilite = [{ key: 1, value: "Mlle" }, { key: 2, value: "Mme" }, { key: 3, value: "M." }]
+export const typeID = [{ key: 1, value: "Passeport" }, { key: 2, value: "Carte d'identité" }, { key: 3, value: "NINA" },]

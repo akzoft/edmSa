@@ -16,7 +16,7 @@ const ActualiteCard: FC<{ info: IInfoRes, setInfo: any, toggleOverlay: any }> = 
             </View>}
 
             <View style={styles.infos}>
-                <Text style={styles.title}>{info?.title}</Text>
+                <Text style={styles.title}>{info?.title?.slice(0, 50)}{info?.title?.length > 50 && "..."}</Text>
                 <Text style={styles.content}>{info?.content?.slice(0, 180)}{info?.content?.length > 180 && "..."}</Text>
             </View>
         </TouchableOpacity>

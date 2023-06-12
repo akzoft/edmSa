@@ -1,24 +1,64 @@
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import Ionicons from "react-native-vector-icons/Ionicons"
-import { colors, images } from '../../libs'
+import { RootState, colors, images, paiement_facture } from '../../libs'
 import { Overlay } from 'react-native-elements'
+import { IFactureReq } from '../../libs/others/models'
+import { useDispatch, useSelector } from 'react-redux'
 
-const PaiementFacture: FC<any> = ({ navigation }) => {
+const PaiementFacture: FC<any> = ({ navigation, route }) => {
+    const routes = route?.params;
+    const dispatch = useDispatch<any>()
+    const [facture, setFacture] = useState<IFactureReq>();
     const [visible, setVisible] = useState<boolean>(false)
-    const [overType, setOverType] = useState({ process: false, success: false, cancel: false, decline: true })
+    const [phone, setPhone] = useState<string>("");
+    const [montant, setMontant] = useState<string>("");
+    const [overType, setOverType] = useState({ process: true, success: false, cancel: false, decline: false, message: false })
     const toggleOverlay = () => { setVisible(!visible) }
+    const [error, setError] = useState<string>("");
+    const { auth } = useSelector((state: RootState) => state?.user)
+    const { tmp, ok, errors } = useSelector((state: RootState) => state?.facture)
+
+    useEffect(() => {
+        setFacture(routes?.facture)
+    }, [routes]);
+
+    useEffect(() => {
+        if (ok && ok !== 'sent') {
+            setOverType(old => { return { ...old, process: false, message: false, decline: true } })
+            setError(ok)
+        }
+    }, [ok]);
+
+    useEffect(() => {
+        if (tmp && (ok && ok === 'sent')) {
+            setOverType(old => { return { ...old, process: false, message: true } })
+            dispatch({ type: "reset_tmp" })
+        }
+    }, [tmp]);
+
+
+
+    const handleBuy = () => {
+        if (auth)
+            if (facture) {
+                const data: IFactureReq = { ...facture }
+                data.phone = parseInt(phone)
+                data.amountPaid = parseInt(montant)
+                dispatch(paiement_facture(data, auth?.accessToken))
+            }
+    }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: 0 }]}>
             {/* overlay vitepay */}
             <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle={[styles.overlay, { height: "70%" }]} animationType="slide">
                 <View style={{ height: 180, }}>
                     <View style={[{ position: "relative", alignItems: "center", justifyContent: "center" }]}>
 
-                        <View style={{ position: "absolute", borderBottomWidth: 2, borderBottomColor: colors.main, width: 180, height: 180, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
+                        <View style={{ position: "absolute", borderBottomWidth: 0, borderBottomColor: colors.main, width: 180, height: 180, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
                             <Image source={images.vitepay} style={{ width: "100%", height: "100%", borderRadius: 180, resizeMode: "contain", }} />
                         </View>
                         <TouchableOpacity style={{ alignSelf: "flex-end", padding: 10 }} activeOpacity={0.7} onPress={toggleOverlay}><Fontisto name="close-a" size={18} style={{ color: colors.red }} /></TouchableOpacity>
@@ -33,80 +73,79 @@ const PaiementFacture: FC<any> = ({ navigation }) => {
 
                 {overType.process ?
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                        <Text>ok</Text>
-                    </ScrollView> :
-                    overType.success ?
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                            <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.success, alignItems: "center", justifyContent: "center" }}>
-                                    <MaterialCommunityIcons name="check-all" size={50} color={colors.white} />
+                        <View>
+                            <View style={{ gap: 15 }}>
+                                <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
+                                    <Text style={{ fontSize: 20 }}>Téléphone</Text>
+                                    <TextInput keyboardType="phone-pad" placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
                                 </View>
-                                <Text style={{ color: colors.success, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT REUSSI</Text>
+
+                                <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
+                                    <Text style={{ fontSize: 20 }}>Montant</Text>
+                                    <TextInput keyboardType="phone-pad" placeholder="Montant à payer" value={montant} onChangeText={text => setMontant(text)} />
+                                </View>
+
+                            </View>
+                            <View style={{ marginVertical: 15, paddingHorizontal: 40 }}>
+                                <Text style={{ textAlign: "center" }}>Payer votre transaction depuis votre téléphone</Text>
+                            </View>
+
+                            <View >
+                                <TouchableOpacity onPress={handleBuy} style={{ backgroundColor: colors.main, padding: 15, borderRadius: 10 }}>
+                                    <Text style={{ textAlign: "center", color: colors.white }}>Payer maintenant</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ScrollView> :
+                    overType.message ?
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
+                            <View style={{ alignItems: "center" }}>
+                                <Text style={{ fontSize: 20, color: colors.warning, textAlign: "center" }}>PAIEMENT FACTURE POST PAIE en attente</Text>
                             </View>
 
                             <View>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: Akougnon Pierre DOLO</Text>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>No. compteur: 100225N</Text>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>Montant payer: 225.000 F CFA</Text>
-                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de facture No. 100225N à reussi.</Text>
+                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {facture?.owner}</Text>
+                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>Compteur N° {facture?.compteur}</Text>
+                                {/* <Text style={{ fontSize: 20, color: colors.black, textAlign: "center", marginTop: 20 }}>Vous avez un paiement en attente. Composez <Text style={{ fontWeight: "bold" }}>#144#3*6#</Text> pour le valider avant 60 minutes.</Text> */}
+
+                                <Text style={{ fontSize: 18, color: colors.black, textAlign: "justify", marginTop: 10, }}>
+                                    Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
+                                </Text>
+                            </View>
+
+                            {/* <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
+                <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Nouvelle recharge</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
+                </TouchableOpacity>
+            </View> */}
+                        </ScrollView> :
+                        overType.cancel &&
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
+                            <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
+                                <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
+                                    <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
+                                </View>
+                                <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT ANNULé</Text>
+                            </View>
+
+                            <View>
+                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de facture No. 100255N a été annulé. Veuillez réessayer de nouveau</Text>
                             </View>
 
                             <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
                                 <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Payer d'autre facture</Text>
+                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Payer une facture</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
                                     <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
                                 </TouchableOpacity>
                             </View>
-                        </ScrollView> :
-                        overType.cancel ?
-                            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                                <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                    <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
-                                        <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
-                                    </View>
-                                    <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT ANNULé</Text>
-                                </View>
-
-                                <View>
-                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de facture No. 100255N a été annulé. Veuillez réessayer de nouveau</Text>
-                                </View>
-
-                                <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                    <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ color: colors.white, fontWeight: "bold" }}>Payer une facture</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </ScrollView> :
-                            overType.decline &&
-                            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                                <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                    <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
-                                        <Ionicons name="ios-close" size={50} color={colors.white} />
-                                    </View>
-                                    <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT ECHOUé</Text>
-                                </View>
-
-                                <View>
-                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de facture No. 100225N à echouer. Veuillez réessayer de nouveau</Text>
-                                </View>
-
-                                <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                    <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ color: colors.white, fontWeight: "bold" }}>Payer une facture</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </ScrollView>
+                        </ScrollView>
                 }
             </Overlay>
 
@@ -117,10 +156,10 @@ const PaiementFacture: FC<any> = ({ navigation }) => {
                         <View style={{ width: "100%", gap: 60 }}>
 
                             <View>
-                                <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Facture No. 654325</Text>
-                                <Text style={{ textAlign: "center", fontSize: 15 }}>Nom et Prénom : <Text style={{ color: colors.black, fontWeight: "bold" }}>Akougnon Pierre DOLO</Text></Text>
-                                <Text style={{ textAlign: "center", fontSize: 15 }}>No. compteur: <Text style={{ color: colors.black, fontWeight: "bold" }}>100225N</Text></Text>
-                                <Text style={{ textAlign: "center", fontSize: 15 }}>Montant à payer: <Text style={{ color: colors.black, fontWeight: "bold" }}>225.000 F CFA</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Facture No. {facture?.compteur}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 15 }}>Nom et Prénom : <Text style={{ color: colors.black, fontWeight: "bold" }}>{facture?.owner}</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 15 }}>No. compteur: <Text style={{ color: colors.black, fontWeight: "bold" }}>{facture?.compteur}</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 15 }}>Montant à payer: <Text style={{ color: colors.black, fontWeight: "bold" }}>{facture?.amountToBePaid}</Text></Text>
                             </View>
 
 
@@ -134,8 +173,7 @@ const PaiementFacture: FC<any> = ({ navigation }) => {
 
                             <View style={{ gap: 15 }}>
                                 <TouchableOpacity onPress={toggleOverlay} style={styles.button}>
-                                    <Text style={styles.btn_text}>Payer</Text>
-                                    <Text style={styles.btn_text}>225.000 F CFA</Text>
+                                    <Text style={styles.btn_text}>Proceder au paiement</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

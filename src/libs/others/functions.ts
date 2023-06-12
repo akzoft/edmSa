@@ -47,15 +47,32 @@ export function Expired(date: number) {
     return date < new Date().getTime()
 }
 
-export const comparaison = (a: any, b: any) => {
-    if (a.createdAt < b.createdAt) {
+export function reverseArray(array: Array<any>): Array<any> {
+    var reversedArray = array.slice();
+    reversedArray.reverse();
+    return reversedArray;
+}
+
+
+// export const comparaison = (a: any, b: any) => {
+//     if (a.createdAt < b.createdAt) {
+//         return -1;
+//     }
+//     if (a.createdAt > b.createdAt) {
+//         return 1;
+//     }
+//     return 0;
+// };
+
+export function comparaison(a: any, b: any) {
+    if (a.updatedAt < b.updatedAt) {
         return -1;
-    }
-    if (a.createdAt > b.createdAt) {
+    } else if (a.updatedAt > b.updatedAt) {
         return 1;
+    } else {
+        return 0;
     }
-    return 0;
-};
+}
 
 export async function requestUserPermission() {
     const authStatus = await messaging().requestPermission()

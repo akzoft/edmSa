@@ -2,6 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
 import { RootState, colors, deleteOneNotification } from '../../libs'
 import { useDispatch, useSelector } from 'react-redux'
+import moment from 'moment'
+import 'moment/locale/fr';
 
 const DetailNotification: FC<any> = ({ route, navigation }) => {
     const routes = route?.params
@@ -10,7 +12,7 @@ const DetailNotification: FC<any> = ({ route, navigation }) => {
     const { auth } = useSelector((state: RootState) => state?.user)
 
     useEffect(() => {
-        if (routes?.notif) setNotif(routes?.notif)
+        if (routes?.notif) { setNotif(routes?.notif) }
     }, [routes])
 
     const handleDelete = () => {
@@ -25,7 +27,7 @@ const DetailNotification: FC<any> = ({ route, navigation }) => {
             <View style={{ padding: 20, gap: 20 }}>
                 <Text style={{ fontSize: 22 }}>{notif?.title}</Text>
                 <Text style={{ textAlign: "justify" }}>{notif?.message}</Text>
-                <Text style={{ alignSelf: "flex-end", fontStyle: "italic", fontSize: 12, color: "brown" }}>{notif?.createdAt}</Text>
+                <Text style={{ alignSelf: "flex-end", fontStyle: "italic", fontSize: 12, color: "brown" }}>{moment(notif?.updatedAt).fromNow()}</Text>
             </View>
 
             <View style={{ paddingHorizontal: 20, marginTop: 15 }}>

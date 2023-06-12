@@ -8,7 +8,7 @@ interface IAction { type: string; payload: string | boolean | IActualite | IActu
 
 const actualiteReducer = (state = initial, action: IAction): IActualiteStore => {
     switch (action.type) {
-        case "loading": return { ...state, loading: true, errors: null }
+        case "a_loading": return { ...state, loading: true, errors: null }
 
         case "errors": return { ...state, loading: false, errors: action.payload }
 

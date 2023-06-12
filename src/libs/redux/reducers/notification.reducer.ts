@@ -8,7 +8,7 @@ interface IAction { type: string; payload: string | boolean | INotification | IN
 
 const notifReducer = (state = initial, action: IAction): INotificationStore => {
     switch (action.type) {
-        case "loading": return { ...state, loading: true, errors: null }
+        case "n_loading": return { ...state, loading: true, errors: null }
 
         case "errors": return { ...state, loading: false, errors: action.payload }
 
