@@ -38,7 +38,7 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
 
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ padding: 10, marginTop: 15 }}>
-                        <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs POST-PAIE</Text>
+                        {classics_cpt?.length > 0 && <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs POST-PAIE</Text>}
                         <View style={{ marginTop: 10 }}>
                             <FlatList
                                 data={classics_cpt}

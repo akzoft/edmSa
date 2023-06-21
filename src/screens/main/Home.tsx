@@ -1,5 +1,5 @@
 import { ActivityIndicator, Animated, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import Entypo from "react-native-vector-icons/Entypo"
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
@@ -13,7 +13,7 @@ import { Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useIsFocused } from '@react-navigation/native'
 
-const Home = () => {
+const Home: FC<any> = ({ navigation }) => {
     const [showModal, setShowModal] = useState<boolean>(false)
     const dispatch = useDispatch<any>();
     const isFocused = useIsFocused();
@@ -46,16 +46,14 @@ const Home = () => {
     }, [fadeAnim, isFocused]);
 
 
-
     const handleDisconnect = () => {
         dispatch(deconnexion())
     }
 
-
     return (
         <Animated.View ref={viewRef} style={[css.home.container, { opacity: fadeAnim, flex: 1 }]}>
             <StatusBar barStyle={"light-content"} backgroundColor={colors.main} />
-            <View style={[css.home.content]}>
+            <TouchableOpacity onPress={() => setShowModal(false)} activeOpacity={1} style={[css.home.content]}>
 
                 <View style={css.home.infos}>
                     <View style={css.home.linebox}>
@@ -79,7 +77,7 @@ const Home = () => {
                         {showModal &&
                             <TouchableWithoutFeedback onAccessibilityAction={() => setShowModal(false)} >
                                 <View style={styles.modal}>
-                                    <TouchableOpacity style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('parametres', { openUserEditForm: true }); setShowModal(false) }} style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
                                         <FontAwesome5 name="user-edit" size={20} />
                                         <Text>Modifier</Text>
                                     </TouchableOpacity>
@@ -92,23 +90,24 @@ const Home = () => {
                         }
                     </View>
                 </View>
+                <View style={{ height: 28 }} />
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={css.home.swiper_container}>
-                        <ActualitySwiper />
+                        <ActualitySwiper setShowModal={setShowModal} />
                     </View>
                     <View style={{ height: 20 }} />
 
                     <View style={css.home.cards}>
-                        <HomeCard link='facture' Component={MaterialCommunityIcons} icon='cellphone-check' iconSize={40} title={'Facture'} style={css.home.home_card_container} />
-                        <HomeCard link='isago' Component={Fontisto} icon='list-2' iconSize={40} title={'ISAGO'} style={css.home.home_card_container} type='isago' />
-                        <HomeCard link='devis' Component={Fontisto} icon='list-2' iconSize={40} title={'Devis'} style={css.home.home_card_container} />
-                        <HomeCard link='historique_stk' Component={Octicons} icon='history' iconSize={40} title={'Historique'} style={css.home.home_card_container} />
-                        <HomeCard link='actualite' Component={Entypo} icon='calendar' iconSize={40} title={'Actualité'} style={css.home.home_card_container} />
-                        <HomeCard link='infos' Component={Ionicons} icon='information' iconSize={40} title={'Infos'} style={css.home.home_card_container} type='info' />
+                        <HomeCard link='facture' Component={MaterialCommunityIcons} setShowModal={setShowModal} icon='cellphone-check' iconSize={40} title={'Facture'} style={css.home.home_card_container} />
+                        <HomeCard link='isago' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'ISAGO'} style={css.home.home_card_container} type='isago' />
+                        <HomeCard link='devis' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'Devis'} style={css.home.home_card_container} />
+                        <HomeCard link='historique_stk' Component={Octicons} setShowModal={setShowModal} icon='history' iconSize={40} title={'Historique'} style={css.home.home_card_container} />
+                        <HomeCard link='actualite' Component={Entypo} setShowModal={setShowModal} icon='calendar' iconSize={40} title={'Actualité'} style={css.home.home_card_container} />
+                        <HomeCard link='infos' Component={Ionicons} setShowModal={setShowModal} icon='information' iconSize={40} title={'Infos'} style={css.home.home_card_container} type='info' />
                     </View>
                     <View style={{ height: 60 }} />
                 </ScrollView>
-            </View>
+            </TouchableOpacity>
         </Animated.View>
     )
 }

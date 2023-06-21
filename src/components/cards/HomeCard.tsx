@@ -3,13 +3,13 @@ import React, { FC } from 'react'
 import { colors, images } from '../../libs'
 import { useNavigation } from '@react-navigation/native'
 
-type props = { link: string, style?: StyleProp<ViewStyle>, title?: string, type?: string, Component: React.ComponentType<any>, icon: string, iconSize?: number }
+type props = { link: string, style?: StyleProp<ViewStyle>, title?: string, type?: string, Component: React.ComponentType<any>, icon: string, iconSize?: number, setShowModal: any }
 
-const HomeCard: FC<props> = ({ title, Component, icon, iconSize, style, type, link }) => {
+const HomeCard: FC<props> = ({ title, Component, icon, iconSize, style, type, link, setShowModal }) => {
     const navigation = useNavigation<any>()
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate(link)} activeOpacity={0.7} style={[styles.container, style]}>
+        <TouchableOpacity onPress={() => { navigation.navigate(link); setShowModal(false) }} activeOpacity={0.7} style={[styles.container, style]}>
             <View style={{ backgroundColor: colors.main, padding: 10, borderRadius: type === "info" ? 50 : 5 }}>
                 {type !== "isago" ? <Component name={icon} size={iconSize || 20} color={colors.white} /> :
                     <View style={{ flexDirection: "row" }}>

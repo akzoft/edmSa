@@ -20,9 +20,9 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
 
 
     //display errors if exist
-    useEffect(() => {
-        if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Erreurs', text2: errors ? errors : error && error, }); }
-    }, [error, errors])
+    // useEffect(() => {
+    //     if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Erreurs', text2: errors ? errors : error && error, }); }
+    // }, [error, errors])
 
     const toggleOverlay = () => { setVisible(!visible) }
 
@@ -45,7 +45,8 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
     }, [tmp]);
 
     const handleBuy = () => {
-        if (!phone || phone === "") { setError("Le numéro de téléphone est requis."); return; } else setError("")
+        if (!phone || phone === "") { setError("Votre numéro de téléphone est requis."); return; } else setError("")
+
         if (auth)
             if (devis) {
                 const data: IDevisPayment = { id: devis?.id, phone: parseInt(phone), }

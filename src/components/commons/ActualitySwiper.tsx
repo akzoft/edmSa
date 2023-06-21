@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Image, Text, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { RootState, api_fichiers, colors, images } from '../../libs';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-const ActualitySwiper = () => {
+const ActualitySwiper: FC<any> = ({ setShowModal }) => {
   const navigation = useNavigation<any>()
   const { actualites } = useSelector((state: RootState) => state?.actu)
   // const _actualites = [
@@ -23,7 +23,7 @@ const ActualitySwiper = () => {
         <Swiper autoplayTimeout={8} autoplay activeDotStyle={{ backgroundColor: colors.main }} >
           {actualites?.slice(0, 8)?.map((item, i) => (
             item?.image &&
-            <TouchableOpacity onPress={() => navigation.navigate("actualite", { id: item?.id })} activeOpacity={0.8} key={item.id} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => { navigation.navigate("actualite", { id: item?.id }); setShowModal(false) }} activeOpacity={0.8} key={item.id} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               {<Image source={{ uri: `${api_fichiers}/${item.image}` }} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} />}
               {/* <Image source={item.image} style={{ width: '100%', height: '100%', resizeMode: 'cover' }} /> */}
 

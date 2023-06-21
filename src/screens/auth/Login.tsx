@@ -12,7 +12,7 @@ const Login: FC<props> = ({ navigation }) => {
     const dispatch = useDispatch<any>();
     const [inputs, setinputs] = useState<ILoginReq>({ username: "", password: "", mobile: true, deviceId: "" })
     const [error, setError] = useState<string>()
-    const { errors, loading } = useSelector((state: RootState) => state?.user)
+    const { errors, u_loading } = useSelector((state: RootState) => state?.user)
 
 
     //display errors if exist
@@ -59,8 +59,8 @@ const Login: FC<props> = ({ navigation }) => {
                         </View>
 
                         <TouchableOpacity onPress={handleLogin} style={css.auth.button}>
-                            {loading && <ActivityIndicator size={20} color={colors.white} pointerEvents="none" />}
-                            {!loading && <Text style={{ color: colors.white, fontWeight: "bold" }}>Vérifier</Text>}
+                            {u_loading ? <ActivityIndicator size={20} color={colors.white} pointerEvents="none" /> :
+                                <Text style={{ color: colors.white, fontWeight: "bold" }}>Vérifier</Text>}
                         </TouchableOpacity>
 
 

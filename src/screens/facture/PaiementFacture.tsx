@@ -17,7 +17,7 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
     const [montant, setMontant] = useState<string>("");
     const [overType, setOverType] = useState({ process: true, success: false, cancel: false, decline: false, message: false })
     const toggleOverlay = () => { setVisible(!visible) }
-    const [error, setError] = useState<string>("");
+    const [error, setError] = useState<any>({ phone: '', montant: '' });
     const { auth } = useSelector((state: RootState) => state?.user)
     const { tmp, ok, errors } = useSelector((state: RootState) => state?.facture)
 
@@ -28,7 +28,6 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
     useEffect(() => {
         if (ok && ok !== 'sent') {
             setOverType(old => { return { ...old, process: false, message: false, decline: true } })
-            setError(ok)
         }
     }, [ok]);
 
@@ -42,6 +41,16 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
 
 
     const handleBuy = () => {
+
+        if (phone === "") { setError((old: any) => { return { ...old, phone: "Votre numéro de téléphone est requis." } }); return; } else
+            setError((old: any) => { return { ...old, phone: "" } });
+
+        if (montant === "") { setError((old: any) => { return { ...old, montant: "Le montant à payer est requis." } }); return; } else
+            setError((old: any) => { return { ...old, montant: "" } });
+
+        if (facture?.amountToBePaid && (parseInt(montant) > facture?.amountToBePaid)) { setError((old: any) => { return { ...old, montant: "Votre montant depasse le montant à payer." } }); return; } else
+            setError((old: any) => { return { ...old, montant: "" } });
+
         if (auth)
             if (facture) {
                 const data: IFactureReq = { ...facture }
@@ -78,11 +87,13 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20 }}>Téléphone</Text>
                                     <TextInput keyboardType="phone-pad" placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
+                                    <Text style={{ fontSize: 10, color: colors.danger }}>{error.phone}</Text>
                                 </View>
 
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20 }}>Montant</Text>
                                     <TextInput keyboardType="phone-pad" placeholder="Montant à payer" value={montant} onChangeText={text => setMontant(text)} />
+                                    <Text style={{ fontSize: 10, color: colors.danger }}>{error.montant}</Text>
                                 </View>
 
                             </View>

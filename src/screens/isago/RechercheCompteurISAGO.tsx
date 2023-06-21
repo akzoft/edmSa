@@ -35,7 +35,7 @@ const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
 
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ padding: 10, marginTop: 15 }}>
-                        <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs ISAGO</Text>
+                        {isago_cpt?.length > 0 && <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs ISAGO</Text>}
                         <View style={{ marginTop: 10 }}>
                             <FlatList
                                 data={isago_cpt}

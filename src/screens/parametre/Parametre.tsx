@@ -2,7 +2,7 @@ import { Animated, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpaci
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { NotificationCard } from '../../components';
-import { ICompteur, ReadNotification, RootState, colors, create_compteur, deleteOneNotification, delete_compteur, getAllCompteur, getAllNotifications, handleChangeMobile, images, reverseArray, update_compteur } from '../../libs';
+import { ICompteur, ReadNotification, RootState, colors, create_compteur, deleteOneNotification, delete_compteur, getAllCompteur, getAllNotifications, handleChangeMobile, images, reverseArray, update, update_compteur } from '../../libs';
 import { Overlay } from 'react-native-elements';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { useIsFocused } from '@react-navigation/native';
@@ -12,22 +12,25 @@ import { TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Parametre: FC<any> = ({ navigation }) => {
+const Parametre: FC<any> = ({ navigation, route }) => {
+    const routes = route?.params
     const isFocused = useIsFocused();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const viewRef = useRef(null);
     const dispatch = useDispatch<any>();
-    const [error, setError] = useState({ label: "", type: "", number: "" });
+    const [error, setError] = useState({ label: "", type: "", number: "", name: '', username: '' });
     const [visible, setVisible] = useState<boolean>(false)
     const [visible1, setVisible1] = useState<boolean>(false)
     const [visible2, setVisible2] = useState<boolean>(false)
     const init = { id: "", number: "", label: "", type: "" };
     const [inputsCompteur, setInputsCompteur] = useState<ICompteur>(init);
+    const userEditInit = { name: '', username: '', email: '', phone: '' }
+    const [inputsUserEdit, setInputsUserEdit] = useState<any>(userEditInit);
     const [typeCompteur, setTypeCompteur] = useState<string>("ISAGO");
     const [typeEditCompteur, setTypeEditCompteur] = useState<string>("");
     const [edit, setEdit] = useState(false);
     const [compteur, setCompteur] = useState<ICompteur>({ id: "", number: "", label: "", type: "" });
-    const { auth } = useSelector((state: RootState) => state?.user)
+    const { temps, auth } = useSelector((state: RootState) => state?.user)
     const { tmp, temp, compteurs, tmp_del } = useSelector((state: RootState) => state?.compteur)
 
 
@@ -35,6 +38,13 @@ const Parametre: FC<any> = ({ navigation }) => {
         if (compteur)
             setTypeEditCompteur(compteur.type)
     }, [compteur]);
+
+    useEffect(() => {
+        if (routes?.openUserEditForm) {
+            setVisible(true)
+            routes.openUserEditForm = false
+        }
+    }, [routes?.openUserEditForm]);
 
 
     //fade in animation
@@ -67,7 +77,7 @@ const Parametre: FC<any> = ({ navigation }) => {
         }
     }, [tmp]);
 
-    //for update
+    //for update compteur
     useEffect(() => {
         if (temp) {
             setCompteur(init)
@@ -88,6 +98,21 @@ const Parametre: FC<any> = ({ navigation }) => {
     }, [tmp_del]);
 
 
+    //user form after update
+    useEffect(() => {
+        if (temps) {
+            setInputsUserEdit(userEditInit)
+            toggleOverlay();
+            dispatch({ type: "reset_temps" });
+        }
+    }, [temps]);
+
+    //initialiser user edit form
+    useEffect(() => {
+        setInputsUserEdit({ name: auth?.name, username: auth?.username, phone: auth?.phone })
+    }, [auth]);
+
+    //gestion compteurs
     const handleAddCompteur = () => {
 
         if (inputsCompteur.label === "") { setError(old => { return { ...old, label: "Le label du compteur est requis." } }); return; } else
@@ -129,10 +154,21 @@ const Parametre: FC<any> = ({ navigation }) => {
         }
     }
 
-
     const handleDelete = () => {
         if (auth)
             dispatch(delete_compteur(compteur?.id, auth?.accessToken))
+    }
+
+    //gestion edition utilisateur
+    const handleEditUser = () => {
+        if (inputsUserEdit.name === "") { setError(old => { return { ...old, name: "Votre nom est requis." } }); return; } else
+            setError(old => { return { ...old, name: "" } });
+
+        if (inputsUserEdit.username === "") { setError(old => { return { ...old, username: "Votre nom d'utilisateur est requis." } }); return; } else
+            setError(old => { return { ...old, username: "" } });
+
+        if (auth)
+            dispatch(update(auth?.id, inputsUserEdit, auth?.accessToken))
     }
 
 
@@ -149,7 +185,21 @@ const Parametre: FC<any> = ({ navigation }) => {
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.desc_container}>
 
-                    <TouchableOpacity style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" }}>
+                    <View style={{ gap: 10 }}>
+                        <View style={{ gap: 5 }}>
+                            <Text>Nom complet </Text>
+                            <TextInput value={inputsUserEdit.name} onChangeText={text => handleChangeMobile("name", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ fontSize: 10, color: colors.danger }}>{error.name}</Text>
+                        </View>
+
+                        <View style={{ gap: 5 }}>
+                            <Text>Nom d'utilisateur</Text>
+                            <TextInput value={inputsUserEdit.username} onChangeText={text => handleChangeMobile("username", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ fontSize: 10, color: colors.danger }}>{error.username}</Text>
+                        </View>
+                    </View>
+
+                    <TouchableOpacity onPress={handleEditUser} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: colors.white }}>Enregistrer les modifications</Text>
                     </TouchableOpacity>
 
@@ -350,7 +400,7 @@ const CompteurSmallCard: FC<{ compteur: ICompteur, toggleOverlay2: any, setCompt
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "center", backgroundColor: colors.body },
     content: { width: "100%", padding: 10, paddingHorizontal: 15, gap: 10, justifyContent: "center" },
-    bottomSheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingVertical: 10, width: "100%", position: "absolute", height: "30%", bottom: 0 },
+    bottomSheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingVertical: 10, width: "100%", position: "absolute", height: "50%", bottom: 0 },
     sheet_header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     sheet_title: { color: colors.dark, fontWeight: "300", letterSpacing: 1.5, fontSize: 18 },
     sheet_close: { color: colors.danger },

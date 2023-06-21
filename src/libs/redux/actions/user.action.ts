@@ -9,6 +9,7 @@ export const checking = () => async (dispatch: any) => {
     try {
         dispatch({ type: "u_loading" })
         const data = await AsyncStorage.getItem("user")
+
         if (data && !empty(data)) {
             const p_data = JSON.parse(data)
 
@@ -25,6 +26,9 @@ export const checking = () => async (dispatch: any) => {
                         dispatch({ type: "authentification_reussie", payload: user })
                     }
             }
+        } else {
+            await AsyncStorage.removeItem("user")
+            dispatch({ type: "deconnexion_reussie", payload: null })
         }
     } catch (error: any) {
         dispatch({ type: "errors", payload: error?.response?.data?._embedded?.errors[0]?.message })
@@ -120,10 +124,23 @@ export const get = () => async (dispatch: any) => {
     }
 }
 
+export const update = (id: string, data: any, token: string) => async (dispatch: any) => {
+    try {
+        dispatch({ type: "u_loading" })
+        const ans = await axios.put(`${api}/users/${id}`, data, { headers: { Authorization: `Bearer ${token}` } })
 
+        const _data = await AsyncStorage.getItem("user")
+        if (_data && ans.data) {
+            const p_data = JSON.parse(_data)
+            const newUpdatedData = { ...p_data.user, name: ans.data.name, username: ans.data.username }
+            await AsyncStorage.setItem("user", JSON.stringify({ user: newUpdatedData }))
+            dispatch({ type: "update_user_reussie", payload: newUpdatedData })
+        }
 
-
-
+    } catch (error: any) {
+        dispatch({ type: "errors", payload: error?.response?.data?._embedded?.errors[0]?.message })
+    }
+}
 
 export const deconnexion = () => async (dispatch: any) => {
     try {

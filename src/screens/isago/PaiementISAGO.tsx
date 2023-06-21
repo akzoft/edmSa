@@ -2,8 +2,7 @@ import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View 
 import React, { FC, useEffect, useState } from 'react'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import { IISAGOreq, IISAGOres, RootState, colors, images, paiement_isago } from '../../libs'
+import { IISAGOreq, RootState, colors, images, paiement_isago } from '../../libs'
 import { Overlay } from 'react-native-elements'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -15,7 +14,7 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     const [isago, setIsago] = useState<IISAGOreq>();
     const [montant, setMontant] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
-    const [error, setError] = useState<string>("");
+    const [error, setError] = useState<any>({ phone: '', montant: '' });
     const { auth } = useSelector((state: RootState) => state?.user)
     const { tmp, ok } = useSelector((state: RootState) => state?.isago)
 
@@ -29,7 +28,6 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     useEffect(() => {
         if (ok && ok !== 'sent') {
             setOverType(old => { return { ...old, process: false, message: false, decline: true } })
-            setError(ok)
         }
     }, [ok]);
 
@@ -41,6 +39,14 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     }, [tmp]);
 
     const handleBuy = () => {
+
+        if (phone === "") { setError((old: any) => { return { ...old, phone: "Votre numéro de téléphone est requis." } }); return; } else
+            setError((old: any) => { return { ...old, phone: "" } });
+
+        if (montant === "") { setError((old: any) => { return { ...old, montant: "Le montant à payer est requis." } }); return; } else
+            setError((old: any) => { return { ...old, montant: "" } });
+
+
         if (auth)
             if (isago) {
                 const data: IISAGOreq = {
@@ -85,11 +91,13 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20 }}>Téléphone</Text>
                                     <TextInput keyboardType="phone-pad" placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
+                                    <Text style={{ fontSize: 10, color: colors.danger }}>{error.phone}</Text>
                                 </View>
 
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20 }}>Montant</Text>
                                     <TextInput keyboardType="phone-pad" placeholder="Montant à payer" value={montant} onChangeText={text => setMontant(text)} />
+                                    <Text style={{ fontSize: 10, color: colors.danger }}>{error.montant}</Text>
                                 </View>
 
                             </View>

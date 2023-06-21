@@ -22,7 +22,14 @@ const home = StyleSheet.create({
     container: {
         flex: 1, backgroundColor: colors.main, marginBottom: -40
     },
-    infos: { flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10, borderRadius: 10, width: "90%", alignSelf: "center", marginTop: "-15%" },
+    // infos: {
+    //     flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10,
+    //     borderRadius: 10, width: "90%", alignSelf: "center", marginTop: "-15%"
+    // },
+    infos: {
+        flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10,
+        borderRadius: 10, width: "90%", alignSelf: "center", position: 'absolute', height: 80, top: -30
+    },
     // infos: { flexDirection: "row", justifyContent: "center", zIndex: 10, backgroundColor: colors.white, padding: 10, borderRadius: 10, width: "90%", alignSelf: "center", position: "absolute", top: "-5%" },
     linebox: { width: "100%", position: "absolute", top: "-17%", alignItems: "center" },
     line: { height: 10, width: "100%", borderTopRightRadius: 30, borderTopLeftRadius: 30, backgroundColor: colors.red, alignSelf: "center" },
@@ -31,7 +38,7 @@ const home = StyleSheet.create({
     title: { color: colors.black, fontSize: 16 },
     name: { color: colors.black, fontSize: 12 },
     sub_name: { color: colors.black, fontSize: 12 },
-    swiper_container: { height: 240, backgroundColor: colors.white },
+    swiper_container: { height: 270, backgroundColor: colors.white },
     home_card_container: { alignItems: "center", justifyContent: "center", gap: 5, },
     content: {
         position: "relative",

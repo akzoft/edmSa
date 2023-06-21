@@ -4,7 +4,7 @@ import { TCompteurType, ICompteurStore, ICompteur, IDevisPayment, IHistorique, I
 import { images } from "./others/images";
 import { colors } from "./others/typography";
 import { comparaison, empty, handleChangeMobile, Expired, removePhoneIndicatif, reverseArray } from "./others/functions";
-import { checking, connexion, deconnexion, forget, inscription, validation, reset, verify, getCode } from "./redux/actions/user.action";
+import { checking, connexion, deconnexion, forget, inscription, validation, reset, verify, getCode, update } from "./redux/actions/user.action";
 import { devis_validation1, devis_validation2, devis_validation3, devis_validation4, file_size_validation, login_validation, register_validation, reset_validation, verify_validation } from "./others/validations";
 import { css } from "./others/css";
 import { getAllInformations, getOneInformation } from "./redux/actions/information.action";
@@ -27,7 +27,7 @@ export {
     ReadNotification, comparaison, reverseArray,
     deleteOneNotification, getVilles, devis_validation4, create_devis, getAllDevi,
     devis_validation1,
-    devis_validation2, devis_validation3, getAllFacture, searchFacture, paiement_facture,
+    devis_validation2, devis_validation3, getAllFacture, searchFacture, paiement_facture, update,
     getAllISAGO, searchISAGO, paiement_isago, paiement_devis, create_compteur, getAllCompteur, update_compteur, delete_compteur, file_size_validation
 }
 
