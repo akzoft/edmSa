@@ -1,10 +1,12 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { IISAGOreq, RootState, colors, images, paiement_isago } from '../../libs'
 import { Overlay } from 'react-native-elements'
 import { useDispatch, useSelector } from 'react-redux'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import { CustomLoader } from '../../components'
 
 const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     const routes = route?.params;
@@ -15,8 +17,9 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     const [montant, setMontant] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
     const [error, setError] = useState<any>({ phone: '', montant: '' });
-    const { auth } = useSelector((state: RootState) => state?.user)
-    const { tmp, ok } = useSelector((state: RootState) => state?.isago)
+    const [click, setClick] = useState(false);
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const { tmp, ok, isago_loading } = useSelector((state: RootState) => state?.isago)
 
 
     const toggleOverlay = () => { setVisible(!visible) }
@@ -35,6 +38,7 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
         if (tmp && (ok && ok === 'sent')) {
             setOverType(old => { return { ...old, process: false, message: true } })
             dispatch({ type: "reset_tmp" })
+            setClick(false)
         }
     }, [tmp]);
 
@@ -62,7 +66,12 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                 console.log(data)
                 dispatch(paiement_isago(data, auth?.accessToken))
             }
+        setClick(true)
     }
+
+
+    if (!click && (isago_loading || user_loading))
+        return <CustomLoader />
 
     return (
         <View style={styles.container}>
@@ -89,33 +98,36 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                         <View>
                             <View style={{ gap: 15 }}>
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
-                                    <Text style={{ fontSize: 20 }}>Téléphone</Text>
-                                    <TextInput keyboardType="phone-pad" placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
+                                    <Text style={{ fontSize: 20, color: colors.dark }}>Téléphone</Text>
+                                    <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={{ color: colors.main }} placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
                                     <Text style={{ fontSize: 10, color: colors.danger }}>{error.phone}</Text>
                                 </View>
 
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
-                                    <Text style={{ fontSize: 20 }}>Montant</Text>
-                                    <TextInput keyboardType="phone-pad" placeholder="Montant à payer" value={montant} onChangeText={text => setMontant(text)} />
+                                    <Text style={{ fontSize: 20, color: colors.dark }}>Montant</Text>
+                                    <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={{ color: colors.main }} placeholder="Montant à payer" value={montant} onChangeText={text => setMontant(text)} />
                                     <Text style={{ fontSize: 10, color: colors.danger }}>{error.montant}</Text>
                                 </View>
 
                             </View>
                             <View style={{ marginVertical: 15, paddingHorizontal: 40 }}>
-                                <Text style={{ textAlign: "center" }}>Payer votre transaction depuis votre téléphone</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Payer votre transaction depuis votre téléphone.</Text>
                             </View>
 
                             <View >
                                 <TouchableOpacity onPress={handleBuy} style={{ backgroundColor: colors.main, padding: 15, borderRadius: 10 }}>
-                                    <Text style={{ textAlign: "center", color: colors.white }}>Payer maintenant</Text>
+                                    {!isago_loading ? <Text style={{ textAlign: "center", color: colors.white }}>Payer maintenant</Text> :
+                                        <ActivityIndicator size={'small'} color={'white'} />
+                                    }
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </ScrollView> :
+
                     overType.message ?
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
                             <View style={{ alignItems: "center" }}>
-                                <Text style={{ fontSize: 20, color: colors.warning, textAlign: "center" }}>PAIEMENT CREDIT ISAGO en attente</Text>
+                                <Text style={{ fontSize: 20, color: isago?.status === 'PAID' ? colors.success : colors.warning, textAlign: "center" }}>Paiement crédit ISAGO <Text style={{}}>{isago?.status === 'PAID' ? 'réussi' : 'en attente'}</Text></Text>
                             </View>
 
                             <View>
@@ -126,25 +138,36 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                                 <Text style={{ fontSize: 18, color: colors.black, textAlign: "justify", marginTop: 10, }}>
                                     Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
                                 </Text>
+
+                                <View style={{ marginTop: 20 }}>
+                                    <TouchableOpacity onPress={handleBuy} style={{ backgroundColor: isago?.status === 'PAID' ? colors.white : colors.main, padding: 15, borderRadius: 10 }}>
+                                        {isago?.status === 'PENDING' ?
+                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                                <ActivityIndicator size={'small'} color={'white'} />
+                                                <Text style={{ color: colors.white, fontSize: 8, marginTop: 4 }}>En attente de confirmation</Text>
+                                            </View> :
+                                            isago?.status === 'PAID' ?
+                                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                                    <FontAwesome5 name='check-circle' size={28} color={colors.success} />
+                                                    <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement ISAGO réussi</Text>
+                                                </View> :
+                                                isago?.status === 'CANCELED' && <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                                    <FontAwesome5 name='times-circle' size={28} color={colors.danger} />
+                                                    <Text style={{ color: colors.danger, fontSize: 14, marginTop: 4, }}>Paiement ISAGO échoué</Text>
+                                                </View>
+                                        }
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-
-                            {/* <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                        <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ color: colors.white, fontWeight: "bold" }}>Nouvelle recharge</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                        </TouchableOpacity>
-                    </View> */}
                         </ScrollView> :
+
                         overType.cancel &&
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
                             <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
                                 <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
                                     <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
                                 </View>
-                                <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>RECHARGE ANNULEE</Text>
+                                <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>RECHARGE ANNULéE</Text>
                             </View>
 
                             <View>
@@ -172,21 +195,16 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
 
                             <View style={{ gap: 20 }}>
                                 <View>
-                                    <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Paiement ISAGO</Text>
-                                    <Text style={{ textAlign: "center", fontSize: 15 }}>Compteur N° {isago?.compteur}</Text>
+                                    <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black, marginBottom: 20 }}>Paiement ISAGO</Text>
+                                    <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Compteur N° {isago?.compteur}</Text>
                                 </View>
 
                                 <View style={{ gap: 2 }}>
-                                    <Text style={{ textAlign: "center", fontSize: 15, }}>Nom et Prenom: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.owner}</Text></Text>
-                                    <Text style={{ textAlign: "center", fontSize: 15, }}>Adresse: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.address}</Text></Text>
-                                    <Text style={{ textAlign: "center", fontSize: 15 }}>N° compteur: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.compteur}</Text></Text>
+                                    <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Nom et Prenom: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.owner}</Text></Text>
+                                    <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Adresse: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.address}</Text></Text>
+                                    <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>N° compteur: <Text style={{ fontWeight: "bold", color: colors.black }}>{isago?.compteur}</Text></Text>
                                 </View>
                             </View>
-
-
-                            {/* <View>
-                                <TextInput placeholder='Montant crédit ISAGO' style={styles.input} />
-                            </View> */}
 
                             <View style={{ gap: 15 }}>
                                 <TouchableOpacity onPress={toggleOverlay} style={styles.button}>

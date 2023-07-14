@@ -1,7 +1,7 @@
 import { ActivityIndicator, Animated, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { NotificationCard } from '../../components';
+import { CustomLoader, NotificationCard } from '../../components';
 import { ReadNotification, RootState, colors, deleteOneNotification, getAllNotifications, reverseArray } from '../../libs';
 import { Overlay } from 'react-native-elements';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -17,7 +17,7 @@ const Notification: FC<any> = ({ navigation }) => {
 
     const [loadedItems, setLoadedItems] = useState(5);
     const [isLoading, setIsLoading] = useState(false);
-    const { auth } = useSelector((state: RootState) => state?.user)
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
     const { notifications } = useSelector((state: RootState) => state?.notif)
 
 
@@ -36,7 +36,7 @@ const Notification: FC<any> = ({ navigation }) => {
                 useNativeDriver: true,
             }).start();
         }
-    }, [fadeAnim, isFocused]);
+    }, [fadeAnim, isFocused, user_loading]);
 
     const toggleOverlay = () => { setVisible(!visible) }
 
@@ -45,6 +45,7 @@ const Notification: FC<any> = ({ navigation }) => {
             dispatch(ReadNotification(notif.id, auth?.accessToken));
             navigation.navigate("detail_notif", { notif })
             dispatch({ type: "reset_tmp" })
+            toggleOverlay()
         }
     }
 
@@ -61,9 +62,14 @@ const Notification: FC<any> = ({ navigation }) => {
     };
 
     const handleDelete = () => {
-        if (auth && notif)
+        if (auth && notif) {
             dispatch(deleteOneNotification(notif?.id, auth?.accessToken))
+            toggleOverlay()
+        }
     }
+
+    if ((user_loading))
+        return <CustomLoader />
 
     return (
         <Animated.View ref={viewRef} style={[styles.container, { opacity: fadeAnim, flex: 1 }]}>
@@ -97,7 +103,7 @@ const Notification: FC<any> = ({ navigation }) => {
                     onEndReached={handleEndReached}
                     onEndReachedThreshold={0.8} // Appeler onEndReached lorsque vous êtes à 50% de la fin de la liste
                 />
-                {isLoading && <ActivityIndicator size="small" color="gray" style={{ marginBottom: 20 }} />}
+                {isLoading && <ActivityIndicator size="large" color="gray" style={{ marginBottom: 20 }} />}
 
             </View>
             <View style={styles.separator} />
@@ -116,7 +122,7 @@ const styles = StyleSheet.create({
     sheet_title: { color: colors.dark, fontWeight: "300", letterSpacing: 1.5, fontSize: 18 },
     sheet_close: { color: colors.danger },
     desc_container: { flexGrow: 1, paddingVertical: 15, justifyContent: "center", gap: 10 },
-    desc: { fontWeight: "300", textAlign: "justify" },
+    desc: { fontWeight: "300", textAlign: "justify", color: colors.dark },
     screen_title_line: { width: "60%", height: 4, backgroundColor: colors.main, borderRadius: 50, marginVertical: 15, marginBottom: 5 },
     separator: { height: 20 }
 })

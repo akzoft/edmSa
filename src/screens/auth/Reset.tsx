@@ -5,11 +5,12 @@ import Toast from 'react-native-toast-message'
 import { useDispatch, useSelector } from 'react-redux'
 
 type Treset = { password: string, confirm: string, id: string, pin: number, type: string }
-const Reset: FC<any> = ({ navigation }) => {
+const Reset: FC<any> = ({ navigation, route }) => {
+    const routes = route?.params
     const [inputs, setInputs] = useState<Treset>({ id: "", pin: 0, type: "", password: "", confirm: "" })
     const dispatch = useDispatch<any>();
     const [error, setError] = useState<string>("")
-    const { loading, errors, temp, code } = useSelector((state: RootState) => state?.user)
+    const { user_loading, errors, temp } = useSelector((state: RootState) => state?.user)
 
 
     useEffect(() => {
@@ -19,18 +20,23 @@ const Reset: FC<any> = ({ navigation }) => {
 
     useEffect(() => {
         if (temp) {
-            navigation.navigate("login");
-            dispatch({ type: "reset_temp" })
+            if (routes?.code) {
+                navigation.navigate("login");
+                dispatch({ type: "reset_temp" })
+                routes.code = null
+            }
         }
     }, [temp])
 
     const handleReset = () => {
         if (reset_validation(inputs)) { setError(reset_validation(inputs)); return; } else setError("")
+        if (routes?.code) {
+            inputs.id = routes?.code?.id;
+            inputs.type = "sms";
+            inputs.pin = routes?.code?.pin
+            dispatch(reset(inputs))
+        }
 
-        inputs.id = code?.id;
-        inputs.type = "sms";
-        inputs.pin = code?.pin
-        dispatch(reset(inputs))
     }
 
     return (
@@ -46,20 +52,20 @@ const Reset: FC<any> = ({ navigation }) => {
                             <Text style={css.auth.subtitle}>Renseignez votre nouveau mot de passe.</Text>
                         </View>
                         <View style={css.auth.form_item}>
-                            <TextInput style={css.auth.input} secureTextEntry={true} placeholder='Mot de passe' value={inputs.password} onChangeText={text => handleChangeMobile("password", text, setInputs)} />
+                            <TextInput style={css.auth.input} placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={true} placeholder='Mot de passe' value={inputs.password} onChangeText={text => handleChangeMobile("password", text, setInputs)} />
                         </View>
                         <View style={css.auth.form_item}>
-                            <TextInput style={css.auth.input} secureTextEntry={true} placeholder='Confirmer mot de passe' value={inputs.confirm} onChangeText={text => handleChangeMobile("confirm", text, setInputs)} />
+                            <TextInput style={css.auth.input} placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={true} placeholder='Confirmation' value={inputs.confirm} onChangeText={text => handleChangeMobile("confirm", text, setInputs)} />
                         </View>
 
                         <TouchableOpacity onPress={handleReset} style={css.auth.button}>
-                            {loading && <ActivityIndicator size={20} color={colors.white} pointerEvents="none" />}
-                            {!loading && <Text style={{ color: colors.white, fontWeight: "bold" }}>Réinitialiser</Text>}
+                            {user_loading && <ActivityIndicator size={20} color={colors.white} pointerEvents="none" />}
+                            {!user_loading && <Text style={{ color: colors.white, fontWeight: "bold" }}>Réinitialiser</Text>}
                         </TouchableOpacity>
 
                         <View style={css.auth.trybox}>
                             <Text style={css.auth.try}>Vous avez déjà un compte! </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("login")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Connecter vous</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("login")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Connectez-vous</Text></TouchableOpacity>
                         </View>
                     </View>
 

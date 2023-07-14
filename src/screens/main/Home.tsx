@@ -78,12 +78,12 @@ const Home: FC<any> = ({ navigation }) => {
                             <TouchableWithoutFeedback onAccessibilityAction={() => setShowModal(false)} >
                                 <View style={styles.modal}>
                                     <TouchableOpacity onPress={() => { navigation.navigate('parametres', { openUserEditForm: true }); setShowModal(false) }} style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                                        <FontAwesome5 name="user-edit" size={20} />
-                                        <Text>Modifier</Text>
+                                        <FontAwesome5 name="user-edit" size={20} color={colors.black} />
+                                        <Text style={{ color: colors.black }} >Modifier</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={handleDisconnect} style={{ padding: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                                        <AntDesign name="logout" size={20} />
-                                        <Text>Déconnexion</Text>
+                                        <AntDesign name="logout" size={20} color={colors.black} />
+                                        <Text style={{ color: colors.black }}>Déconnexion</Text>
                                     </TouchableOpacity>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -98,12 +98,12 @@ const Home: FC<any> = ({ navigation }) => {
                     <View style={{ height: 20 }} />
 
                     <View style={css.home.cards}>
-                        <HomeCard link='facture' Component={MaterialCommunityIcons} setShowModal={setShowModal} icon='cellphone-check' iconSize={40} title={'Facture'} style={css.home.home_card_container} />
-                        <HomeCard link='isago' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'ISAGO'} style={css.home.home_card_container} type='isago' />
-                        <HomeCard link='devis' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'Devis'} style={css.home.home_card_container} />
-                        <HomeCard link='historique_stk' Component={Octicons} setShowModal={setShowModal} icon='history' iconSize={40} title={'Historique'} style={css.home.home_card_container} />
-                        <HomeCard link='actualite' Component={Entypo} setShowModal={setShowModal} icon='calendar' iconSize={40} title={'Actualité'} style={css.home.home_card_container} />
-                        <HomeCard link='infos' Component={Ionicons} setShowModal={setShowModal} icon='information' iconSize={40} title={'Infos'} style={css.home.home_card_container} type='info' />
+                        <HomeCard type='facture' link='facture' Component={MaterialCommunityIcons} setShowModal={setShowModal} icon='cellphone-check' iconSize={40} title={'Factures'} style={css.home.home_card_container} />
+                        <HomeCard type='isago' link='isago' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'ISAGO'} style={css.home.home_card_container} />
+                        <HomeCard type='devis' link='devis' Component={Fontisto} setShowModal={setShowModal} icon='list-2' iconSize={40} title={'Devis'} style={css.home.home_card_container} />
+                        <HomeCard type='historique' link='historique_stk' Component={Octicons} setShowModal={setShowModal} icon='history' iconSize={40} title={'Historiques'} style={css.home.home_card_container} />
+                        <HomeCard type='actualite' link='actualite' Component={Entypo} setShowModal={setShowModal} icon='calendar' iconSize={40} title={'Actualités'} style={css.home.home_card_container} />
+                        <HomeCard type='info' link='infos' Component={Ionicons} setShowModal={setShowModal} icon='information' iconSize={40} title={'Infos'} style={css.home.home_card_container} />
                     </View>
                     <View style={{ height: 60 }} />
                 </ScrollView>

@@ -36,8 +36,8 @@ const NotificationCard: FC<props> = ({ notif, handleLongPress, setNotif }) => {
                     {!notif?.readed && <View style={{ height: 10, width: 10, borderRadius: 10, backgroundColor: colors.info }} />}
                     <View>
                         <Text style={{ fontSize: 18, fontWeight: "bold", color: colors.black, marginBottom: 10 }}>{notif?.title?.slice(0, 30)}{notif?.title?.length > 30 && "..."}</Text>
-                        <Text>{notif?.message?.slice(0, 120)}{notif?.message?.length > 120 && "..."}</Text>
-                        <Text style={{ fontSize: 12, fontStyle: "italic", alignSelf: "flex-end", }}>{moment(notif?.updatedAt).fromNow()}</Text>
+                        <Text style={{ color: colors.dark, }}>{notif?.message?.slice(0, 120)}{notif?.message?.length > 120 && "..."}</Text>
+                        <Text style={{ fontSize: 12, fontStyle: "italic", alignSelf: "flex-end", color: colors.dark }}>{moment(notif?.updatedAt).fromNow()}</Text>
                     </View>
                 </View>
 

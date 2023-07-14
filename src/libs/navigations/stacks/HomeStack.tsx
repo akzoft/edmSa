@@ -29,7 +29,7 @@ const HomeStack: FC<{ route: any }> = ({ route }) => {
 
     return (
         <stack.Navigator >
-            <stack.Screen name="home" component={Home} options={{ title: "Acceuil", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} /> }} />
+            <stack.Screen name="home" component={Home} options={{ title: "Accueil", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} /> }} />
             <stack.Screen name="isago" component={Isago} options={{ headerShown: false, }} />
             <stack.Screen name="facture" component={Facture} options={{ headerShown: false, }} />
             <stack.Screen name="devis" component={DevisStack} options={{ headerShown: false, }} />

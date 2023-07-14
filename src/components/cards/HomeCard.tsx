@@ -10,15 +10,13 @@ const HomeCard: FC<props> = ({ title, Component, icon, iconSize, style, type, li
 
     return (
         <TouchableOpacity onPress={() => { navigation.navigate(link); setShowModal(false) }} activeOpacity={0.7} style={[styles.container, style]}>
-            <View style={{ backgroundColor: colors.main, padding: 10, borderRadius: type === "info" ? 50 : 5 }}>
-                {type !== "isago" ? <Component name={icon} size={iconSize || 20} color={colors.white} /> :
-                    <View style={{ flexDirection: "row" }}>
-                        <View style={{ justifyContent: "flex-end", }}>
-                            <Text style={{ backgroundColor: colors.white, color: colors.main, padding: 2 }}>ISAGO</Text>
-                        </View>
-                        <Image source={images.logo_min} style={styles.image} />
-                    </View>
-                }
+            <View style={{ padding: 10, width: '100%', height: '80%', alignItems: 'center', justifyContent: 'center' }}>
+                {type === 'facture' && <Image source={images.ico_facture} style={styles.image} />}
+                {type === 'actualite' && <Image source={images.ico_actualite} style={styles.image} />}
+                {type === 'isago' && <Image source={images.ico_compteur} style={styles.image} />}
+                {type === 'devis' && <Image source={images.ico_devis} style={styles.image} />}
+                {type === 'historique' && <Image source={images.ico_historique} style={styles.image} />}
+                {type === 'info' && <Image source={images.ico_info} style={styles.image} />}
             </View>
             <Text style={styles.title}>{title}</Text>
         </TouchableOpacity>
@@ -28,7 +26,7 @@ const HomeCard: FC<props> = ({ title, Component, icon, iconSize, style, type, li
 export default HomeCard
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: colors.white, width: "30%", height: 110, shadowColor: colors.main, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.6, elevation: 2, borderRadius: 5, padding: 5, alignItems: "center", justifyContent: "center", },
-    title: { fontSize: 17, color: colors.main },
-    image: { width: 20, height: 40, resizeMode: "cover" },
+    container: { backgroundColor: colors.white, width: "30%", height: "30%", shadowColor: colors.main, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.6, elevation: 2, borderRadius: 5, padding: 5, alignItems: "center", justifyContent: "center", },
+    title: { fontSize: 10, color: colors.main, textTransform: 'uppercase' },
+    image: { width: 60, height: 60, resizeMode: "contain" },
 })

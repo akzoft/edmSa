@@ -7,7 +7,7 @@ import { verify_validation } from "../../others/validations"
 
 export const checking = () => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const data = await AsyncStorage.getItem("user")
 
         if (data && !empty(data)) {
@@ -26,7 +26,8 @@ export const checking = () => async (dispatch: any) => {
                         dispatch({ type: "authentification_reussie", payload: user })
                     }
             }
-        } else {
+        }
+        else {
             await AsyncStorage.removeItem("user")
             dispatch({ type: "deconnexion_reussie", payload: null })
         }
@@ -37,7 +38,7 @@ export const checking = () => async (dispatch: any) => {
 
 export const inscription = (data: IRegisterReq) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.post(`${api}/auth/signup`, data)
         console.log(ans.data)
         dispatch({ type: "inscription_reussie", payload: { user: ans.data, username: data.username } })
@@ -49,8 +50,10 @@ export const inscription = (data: IRegisterReq) => async (dispatch: any) => {
 
 export const validation = (data: IValidation) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.post(`${api}/auth/confirm`, data)
+        const expirationTime = new Date().getTime() + ans.data.expiresIn * 1000;//1 ans
+        ans.data.expiresIn = expirationTime;
         await AsyncStorage.setItem("user", JSON.stringify({ user: ans.data }))
         dispatch({ type: "validation_reussie", payload: ans.data })
     } catch (error: any) {
@@ -60,7 +63,7 @@ export const validation = (data: IValidation) => async (dispatch: any) => {
 
 export const connexion = (data: any) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.post(`${api}/auth/login`, data)
         const expirationTime = new Date().getTime() + ans.data.expiresIn * 1000;//1 ans
         // const expirationTime = new Date().getTime() + ans.data.expiresIn * 1000 * 1000 * 60 * 60;
@@ -74,7 +77,7 @@ export const connexion = (data: any) => async (dispatch: any) => {
 
 export const forget = (username: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.get(`${api}/auth/password/${username}/mobile`)
         console.log(ans.data)
         dispatch({ type: "forget_reussie", payload: { code: ans.data, username } })
@@ -85,7 +88,7 @@ export const forget = (username: string) => async (dispatch: any) => {
 
 export const getCode = (username: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.get(`${api}/auth/password/${username}/mobile`)
         console.log(ans.data)
         dispatch({ type: "getcode_reussie", payload: ans.data })
@@ -96,7 +99,7 @@ export const getCode = (username: string) => async (dispatch: any) => {
 
 export const verify = (data: IVerify, codePIn: number) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
 
         if (verify_validation(data, codePIn) !== "") throw verify_validation(data, codePIn);
 
@@ -108,7 +111,7 @@ export const verify = (data: IVerify, codePIn: number) => async (dispatch: any) 
 
 export const reset = (data: IResetReq) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.post(`${api}/auth/password/reset`, data)
         dispatch({ type: "reset_reussie", payload: ans.data })
     } catch (error: any) {
@@ -126,7 +129,7 @@ export const get = () => async (dispatch: any) => {
 
 export const update = (id: string, data: any, token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const ans = await axios.put(`${api}/users/${id}`, data, { headers: { Authorization: `Bearer ${token}` } })
 
         const _data = await AsyncStorage.getItem("user")
@@ -144,7 +147,7 @@ export const update = (id: string, data: any, token: string) => async (dispatch:
 
 export const deconnexion = () => async (dispatch: any) => {
     try {
-        dispatch({ type: "u_loading" })
+        dispatch({ type: "user_loading" })
         const data = await AsyncStorage.getItem("user")
 
         if (data && !empty(data)) {

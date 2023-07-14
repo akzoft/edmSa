@@ -6,14 +6,14 @@ const auth = StyleSheet.create(
         container: { flex: 1, backgroundColor: colors.body, alignItems: "center", justifyContent: "center" },
         forms: { paddingHorizontal: 30, width: "100%", gap: 15, marginTop: 20 },
         form_item: { alignItems: "center", justifyContent: "center" },
-        input: { paddingHorizontal: 10, borderWidth: 0.5, borderColor: colors.white, backgroundColor: colors.white, width: "100%", borderRadius: 5 },
+        input: { paddingHorizontal: 10, borderWidth: 0.5, color: colors.main, borderColor: colors.white, backgroundColor: colors.white, width: "100%", borderRadius: 5 },
         labels: { alignItems: "center", justifyContent: "center" },
-        title: { fontSize: 24, letterSpacing: 1, color: colors.black },
+        title: { fontSize: 24, letterSpacing: 1, color: colors.black, textTransform: 'uppercase', textAlign: 'center' },
         subtitle: { color: colors.black, letterSpacing: 1, textAlign: "center", fontSize: 13, marginBottom: 10 },
         button: { backgroundColor: colors.red, padding: 15, alignItems: "center", justifyContent: "center", borderRadius: 5 },
         separator: { height: 20 },
         trybox: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-        try: { textAlign: "center" },
+        try: { textAlign: "center", color: colors.dark },
         toast: { zIndex: 100, },
     }
 )
@@ -48,7 +48,7 @@ const home = StyleSheet.create({
     },
     cards: {
         paddingHorizontal: 10,
-        flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 10, marginTop: 10, justifyContent: "space-between", width: "100%"
+        flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 10, marginTop: 10, justifyContent: "space-between"
     }
 })
 

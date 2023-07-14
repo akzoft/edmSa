@@ -22,7 +22,6 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
         setActiveSection(tab)
     }, [])
 
-
     //add to local storage
     useEffect(() => {
         AsyncStorage.getItem("quit").then((data: any) => {
@@ -48,7 +47,7 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
     useEffect(() => {
         AsyncStorage.getItem("quit").then((data: any) => {
             let _inputs: IDevisReq = JSON.parse(data)
-            if (_inputs !== null && _inputs !== undefined) {
+            if (_inputs !== null && _inputs !== undefined && (_inputs.typeCompteur !== '' || _inputs?.typeDemande !== '' || _inputs?.usage !== '')) {
                 setInputs(_inputs);
                 setTypeCpt(_inputs.typeCompteur)
                 setTypeDemande(_inputs?.typeDemande)
@@ -106,13 +105,21 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
 
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 25 }}>
+            {/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 25 }}>
                 {activeSection?.map(dot => (
                     <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1, height: 1, backgroundColor: currentSection === dot ? colors.primary : colors.dark }} />
                         <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: currentSection === dot ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot + 1}</Text></View>
-                        <View style={{ width: "15%", height: 1, backgroundColor: currentSection === dot ? colors.primary : colors.dark }} />
+                        <View style={{ width: "5%", height: 1, backgroundColor: currentSection === dot ? colors.primary : colors.dark }} />
                     </View>))}
+            </View> */}
+
+
+            <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 25 }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: currentSection !== 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{currentSection + 1}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: currentSection === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{activeSection?.length}</Text></View>
+                </View>
             </View>
 
 
@@ -127,11 +134,10 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                             <Picker
                                 ref={pickerRef}
                                 selectedValue={typeCpt}
-                                onValueChange={(val) => setTypeCpt(val)}>
-                                <Picker.Item label="Type de compteur" value="" />
+                                onValueChange={(val, i) => setTypeCpt(val)} style={{ color: colors.dark }}>
+                                <Picker.Item label="---Type de compteur---" value="" style={{ color: 'rgba(0,0,0,0.2)' }} />
                                 <Picker.Item label="Compteur Conventionnel" value="Compteur Conventionnel" />
                                 <Picker.Item label="Compteur ISAGO" value="Compteur ISAGO" />
-
                             </Picker>
                         </View>
                     </View>
@@ -142,8 +148,8 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                             <Picker
                                 ref={pickerRef}
                                 selectedValue={typeDemande}
-                                onValueChange={(val) => setTypeDemande(val)}>
-                                <Picker.Item label="Type de demande" value="" />
+                                onValueChange={(val, i) => setTypeDemande(val)} style={{ color: colors.dark }}>
+                                <Picker.Item label="---Type de demande---" value="" style={{ color: 'rgba(0,0,0,0.2)' }} />
                                 <Picker.Item label="Nouveau" value="Nouveau" />
                                 <Picker.Item label="Mutation/Aug./Dim./Chang. Puissance" value="Mutation/Aug./Dim./Chang. Puissance" />
                                 <Picker.Item label="Réabonnement" value="Réabonnement" />
@@ -158,8 +164,8 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                             <Picker
                                 ref={pickerRef}
                                 selectedValue={typeUsage}
-                                onValueChange={(val) => setTypeUsage(val)}>
-                                <Picker.Item label="Usage" value="" />
+                                onValueChange={(val) => setTypeUsage(val)} style={{ color: colors.dark }}>
+                                <Picker.Item label="---Usage---" value="" style={{ color: 'rgba(0,0,0,0.2)' }} />
                                 <Picker.Item label="Domestique" value="Domestique" />
                                 <Picker.Item label="Commercial" value="Commercial" />
 
@@ -185,77 +191,77 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                     <Text style={styles.title}>2. Charge prévue</Text>
 
                     <View style={[styles.forms, { marginBottom: 15 }]}>
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Climatiseurs</Text>
-                                <TextInput keyboardType="number-pad" placeholder='Nombre de climateur' style={[styles.input,]} value={inputs?.climatiseur ? inputs.climatiseur?.toString() : ""} onChangeText={text => handleChangeMobile("climatiseur", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Climatiseurs</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.climatiseur ? inputs.climatiseur?.toString() : ""} onChangeText={text => handleChangeMobile("climatiseur", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Ventilateurs</Text>
-                                <TextInput keyboardType="number-pad" placeholder='Nombre de ventilateurs' style={[styles.input,]} value={inputs?.ventilateur ? inputs.ventilateur?.toString() : ""} onChangeText={text => handleChangeMobile("ventilateur", text, setInputs)} />
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Machine à laver</Text>
-                                <TextInput keyboardType="number-pad" placeholder='Nombre de machine à laver' style={[styles.input,]} value={inputs?.machineLaver ? inputs.machineLaver?.toString() : ""} onChangeText={text => handleChangeMobile("machineLaver", text, setInputs)} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Ampoules</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre d'ampoules" style={[styles.input,]} value={inputs?.ampoule ? inputs.ampoule?.toString() : ""} onChangeText={text => handleChangeMobile("ampoule", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Ventilateurs</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.ventilateur ? inputs.ventilateur?.toString() : ""} onChangeText={text => handleChangeMobile("ventilateur", text, setInputs)} />
                             </View>
                         </View>
 
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Chauffe eau</Text>
-                                <TextInput keyboardType="number-pad" placeholder='Nombre de chauffe eau' style={[styles.input,]} value={inputs?.chauffeEau ? inputs.chauffeEau?.toString() : ""} onChangeText={text => handleChangeMobile("chauffeEau", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Machine à laver</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.machineLaver ? inputs.machineLaver?.toString() : ""} onChangeText={text => handleChangeMobile("machineLaver", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Ordinateurs</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre d'ordinateur" style={[styles.input,]} value={inputs?.ordinateur ? inputs.ordinateur?.toString() : ""} onChangeText={text => handleChangeMobile("ordinateur", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Ampoules</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.ampoule ? inputs.ampoule?.toString() : ""} onChangeText={text => handleChangeMobile("ampoule", text, setInputs)} />
+                            </View>
+                        </View>
+
+                        <View style={[styles.form_item, { gap: 15, }]}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Nb. Chauffe eau</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.chauffeEau ? inputs.chauffeEau?.toString() : ""} onChangeText={text => handleChangeMobile("chauffeEau", text, setInputs)} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Nb. Ordinateurs</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.ordinateur ? inputs.ordinateur?.toString() : ""} onChangeText={text => handleChangeMobile("ordinateur", text, setInputs)} />
                             </View>
 
                         </View>
 
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Congélateurs</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de congélateur" style={[styles.input,]} value={inputs?.congelateur ? inputs.congelateur?.toString() : ""} onChangeText={text => handleChangeMobile("congelateur", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Congélateurs</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.congelateur ? inputs.congelateur?.toString() : ""} onChangeText={text => handleChangeMobile("congelateur", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Réfrigerateurs</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de réfrigérateur" style={[styles.input,]} value={inputs?.refrigerateur ? inputs.refrigerateur?.toString() : ""} onChangeText={text => handleChangeMobile("refrigerateur", text, setInputs)} />
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Téléviseur</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de téléviseur" style={[styles.input,]} value={inputs?.televiseur ? inputs.televiseur?.toString() : ""} onChangeText={text => handleChangeMobile("televiseur", text, setInputs)} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Boulloire électrique</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de bouilloire électrique" style={[styles.input,]} value={inputs?.bouilloireElectrique ? inputs.bouilloireElectrique?.toString() : ""} onChangeText={text => handleChangeMobile("bouilloireElectrique", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Réfrigerateurs</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.refrigerateur ? inputs.refrigerateur?.toString() : ""} onChangeText={text => handleChangeMobile("refrigerateur", text, setInputs)} />
                             </View>
                         </View>
 
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Fer à repasser</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de fer à repasser" style={[styles.input,]} value={inputs?.ferRepasser ? inputs.ferRepasser?.toString() : ""} onChangeText={text => handleChangeMobile("ferRepasser", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Téléviseur</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.televiseur ? inputs.televiseur?.toString() : ""} onChangeText={text => handleChangeMobile("televiseur", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Téléphone</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Nombre de téléphone" style={[styles.input,]} value={inputs?.telephone ? inputs.telephone?.toString() : ""} onChangeText={text => handleChangeMobile("telephone", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Boulloire électrique</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.bouilloireElectrique ? inputs.bouilloireElectrique?.toString() : ""} onChangeText={text => handleChangeMobile("bouilloireElectrique", text, setInputs)} />
                             </View>
                         </View>
 
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Autres</Text>
-                                <TextInput keyboardType="number-pad" placeholder="Autres" style={[styles.input,]} value={inputs?.autre ? inputs.autre?.toString() : ""} onChangeText={text => handleChangeMobile("autre", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nb. Fer à repasser</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.ferRepasser ? inputs.ferRepasser?.toString() : ""} onChangeText={text => handleChangeMobile("ferRepasser", text, setInputs)} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Nb. Téléphone</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.telephone ? inputs.telephone?.toString() : ""} onChangeText={text => handleChangeMobile("telephone", text, setInputs)} />
+                            </View>
+                        </View>
+
+                        <View style={[styles.form_item, { gap: 15, }]}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Autres</Text>
+                                <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.autre ? inputs.autre?.toString() : ""} onChangeText={text => handleChangeMobile("autre", text, setInputs)} />
                             </View>
                         </View>
                     </View>
@@ -266,7 +272,7 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                     <View style={{ flexDirection: "row", gap: 10 }}>
                         {currentSection > 0 && (
                             <TouchableOpacity onPress={goToPreviousSection} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                                <Text style={styles.button_text}>Précedent</Text>
+                                <Text style={styles.button_text}>Précédent</Text>
                             </TouchableOpacity>
                         )}
 
@@ -291,8 +297,8 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                                 <Picker
                                     ref={pickerRef}
                                     selectedValue={typeCivilite}
-                                    onValueChange={(val) => setTypeCivilite(val)}>
-                                    <Picker.Item label="Civilité" value="" />
+                                    onValueChange={(val) => setTypeCivilite(val)} style={{ color: colors.dark }}>
+                                    <Picker.Item label="---Civilité---" value="" color="rgba(0,0,0,0.2)" />
                                     <Picker.Item label="Mlle" value="Mlle" />
                                     <Picker.Item label="Mme" value="Mme" />
                                     <Picker.Item label="M." value="M." />
@@ -307,8 +313,8 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                                 <Picker
                                     ref={pickerRef}
                                     selectedValue={typeTID}
-                                    onValueChange={(val) => setTypeTID(val)}>
-                                    <Picker.Item label="Type d'identification" value="" />
+                                    onValueChange={(val) => setTypeTID(val)} style={{ color: colors.dark }}>
+                                    <Picker.Item label="---Type d'identification---" value="" />
                                     <Picker.Item label="Passeport" value="Passeport" />
                                     <Picker.Item label="Carte d'identité" value="Carte d'identité" />
                                     <Picker.Item label="NINA" value="NINA" />
@@ -318,47 +324,47 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
 
                         <View >
                             <Text style={styles.label}>Numéro d'identification <Text style={styles.required}>*</Text></Text>
-                            <TextInput placeholder="Numéro d'identification" style={[styles.input,]} value={inputs?.numeroIdentification ? inputs.numeroIdentification?.toString() : ""} onChangeText={text => handleChangeMobile("numeroIdentification", text, setInputs)} />
+                            <TextInput placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.numeroIdentification ? inputs.numeroIdentification?.toString() : ""} onChangeText={text => handleChangeMobile("numeroIdentification", text, setInputs)} />
                         </View>
 
                         <View >
                             <Text style={styles.label}>Profession</Text>
-                            <TextInput placeholder="Profession" style={[styles.input,]} value={inputs?.profession ? inputs.profession?.toString() : ""} onChangeText={text => handleChangeMobile("profession", text, setInputs)} />
+                            <TextInput style={[styles.input,]} placeholderTextColor={'rgba(0,0,0,0.5)'} value={inputs?.profession ? inputs.profession?.toString() : ""} onChangeText={text => handleChangeMobile("profession", text, setInputs)} />
                         </View>
 
                     </View>
 
                     <View style={[styles.forms, { marginVertical: 10 }]}>
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Nom <Text style={styles.required}>*</Text></Text>
-                                <TextInput placeholder='Nom' style={styles.input} value={inputs?.nom ? inputs.nom?.toString() : ""} onChangeText={text => handleChangeMobile("nom", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nom <Text style={styles.required}>*</Text></Text>
+                                <TextInput style={styles.input} placeholderTextColor={'rgba(0,0,0,0.5)'} value={inputs?.nom ? inputs.nom?.toString() : ""} onChangeText={text => handleChangeMobile("nom", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Prénom <Text style={styles.required}>*</Text></Text>
-                                <TextInput placeholder='Prénom' style={styles.input} value={inputs?.prenom ? inputs.prenom?.toString() : ""} onChangeText={text => handleChangeMobile("prenom", text, setInputs)} />
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nom de jeune fille</Text>
-                                <TextInput placeholder='Nom de jeune fille' style={styles.input} value={inputs?.nomJeuneFille ? inputs.nomJeuneFille?.toString() : ""} onChangeText={text => handleChangeMobile("nomJeuneFille", text, setInputs)} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Téléphone mobile <Text style={styles.required}>*</Text></Text>
-                                <TextInput keyboardType="phone-pad" placeholder='Téléphone mobile' style={styles.input} value={inputs?.telephoneMobile ? inputs.telephoneMobile?.toString() : ""} onChangeText={text => handleChangeMobile("telephoneMobile", text, setInputs)} />
+                                <Text style={styles.sec_label}>Prénom <Text style={styles.required}>*</Text></Text>
+                                <TextInput style={styles.input} placeholderTextColor={'rgba(0,0,0,0.5)'} value={inputs?.prenom ? inputs.prenom?.toString() : ""} onChangeText={text => handleChangeMobile("prenom", text, setInputs)} />
                             </View>
                         </View>
 
-                        <View style={styles.form_item}>
+                        <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text>Téléphone fixe</Text>
-                                <TextInput keyboardType="phone-pad" placeholder='Téléphone fixe' style={styles.input} value={inputs?.telephoneFixe ? inputs.telephoneFixe?.toString() : ""} onChangeText={text => handleChangeMobile("telephoneFixe", text, setInputs)} />
+                                <Text style={styles.sec_label}>Nom de jeune fille</Text>
+                                <TextInput placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.nomJeuneFille ? inputs.nomJeuneFille?.toString() : ""} onChangeText={text => handleChangeMobile("nomJeuneFille", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Adresse e-mail</Text>
-                                <TextInput placeholder='Adresse e-mail' style={styles.input} value={inputs?.email ? inputs.email?.toString() : ""} onChangeText={text => handleChangeMobile("email", text, setInputs)} />
+                                <Text style={styles.sec_label}>Téléphone mobile <Text style={styles.required}>*</Text></Text>
+                                <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.telephoneMobile ? inputs.telephoneMobile?.toString() : ""} onChangeText={text => handleChangeMobile("telephoneMobile", text, setInputs)} />
+                            </View>
+                        </View>
+
+                        <View style={[styles.form_item, { gap: 15, }]}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Téléphone fixe</Text>
+                                <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.telephoneFixe ? inputs.telephoneFixe?.toString() : ""} onChangeText={text => handleChangeMobile("telephoneFixe", text, setInputs)} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.sec_label}>Adresse e-mail</Text>
+                                <TextInput placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.email ? inputs.email?.toString() : ""} onChangeText={text => handleChangeMobile("email", text, setInputs)} />
                             </View>
                         </View>
                     </View>
@@ -368,7 +374,7 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
                     <View style={{ flexDirection: "row", gap: 10 }}>
                         {currentSection > 0 && (
                             <TouchableOpacity onPress={goToPreviousSection} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                                <Text style={styles.button_text}>Précedent</Text>
+                                <Text style={styles.button_text}>Précédent</Text>
                             </TouchableOpacity>
                         )}
 
@@ -396,7 +402,8 @@ const styles = StyleSheet.create({
     input: { borderWidth: 0.5, borderColor: colors.dark, borderRadius: 5, paddingLeft: 15, color: colors.main },
     required: { color: colors.warning },
     info: { fontSize: 10, fontStyle: "italic" },
-    label: { marginVertical: 4, paddingLeft: 10 },
+    label: { marginVertical: 4, paddingLeft: 10, color: colors.dark },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
-    button_text: { textAlign: "center", fontWeight: "bold", color: colors.white }
+    button_text: { textAlign: "center", fontWeight: "bold", color: colors.white },
+    sec_label: { color: colors.dark }
 })

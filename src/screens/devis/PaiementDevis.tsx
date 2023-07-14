@@ -6,6 +6,7 @@ import { IDevisPayment, IDevisReq, RootState, colors, css, images, paiement_devi
 import { Overlay } from 'react-native-elements'
 import { useDispatch, useSelector } from 'react-redux'
 import Toast from 'react-native-toast-message'
+import { formatNumberWithSpaces } from '../../libs/others/functions'
 
 const PaiementDevis: FC<any> = ({ navigation, route }) => {
     const routes = route?.params;
@@ -80,13 +81,13 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
                         <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
                             <View>
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 15, paddingBottom: 5, borderRadius: 10 }}>
-                                    <Text style={{ fontSize: 22 }}>Téléphone</Text>
-                                    <TextInput keyboardType="phone-pad" placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
+                                    <Text style={{ fontSize: 22, color: colors.dark }}>Téléphone</Text>
+                                    <TextInput style={{ color: colors.main }} keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
                                     <Text style={{ color: colors.red, textAlign: "center" }}>{error && error}</Text>
                                 </View>
 
                                 <View style={{ marginVertical: 30, paddingHorizontal: 40 }}>
-                                    <Text style={{ textAlign: "center" }}>Payer votre transaction depuis votre téléphone</Text>
+                                    <Text style={{ textAlign: "center", color: colors.dark }}>Payer votre transaction depuis votre téléphone</Text>
                                 </View>
 
                                 <View >
@@ -96,7 +97,10 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
                                                 <ActivityIndicator size={40} color={colors.white} pointerEvents="none" />
                                                 <Text style={{ color: colors.white }}>Paiement devis en cours..</Text>
                                             </View > :
-                                            <Text style={{ textAlign: "center", fontSize: 24, color: colors.white }}>Payer {devis?.amount} F CFA</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                                <Text style={{ textAlign: "center", fontSize: 24, color: colors.white, flexWrap: 'wrap' }}>Payer  </Text><Text style={{ textAlign: "center", fontSize: 24, color: colors.white, flexWrap: 'wrap' }}>{formatNumberWithSpaces(devis?.amount)}</Text><Text style={{ textAlign: "center", fontSize: 24, color: colors.white, flexWrap: 'wrap' }}> F CFA</Text>
+                                            </View>
+                                            // <Text style={{ textAlign: "center", fontSize: 24, color: colors.white, flexWrap: 'wrap' }}>Payer {formatNumberWithSpaces(devis?.amount)} F CFA  </Text>
                                         }
                                     </TouchableOpacity>
                                 </View>
@@ -162,22 +166,22 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
                                 <View style={{ gap: 20 }}>
                                     <View>
                                         <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black, marginBottom: 20 }}>Paiement devis</Text>
-                                        <Text style={{ textAlign: "center", fontSize: 18, textTransform: "uppercase", color: colors.dark }}>{devis?.typeCompteur}</Text>
+                                        <Text style={{ textAlign: "center", fontSize: 18, textTransform: "uppercase", color: colors.black }}>{devis?.typeCompteur}</Text>
                                     </View>
 
                                     <View style={{ gap: 2 }}>
-                                        <Text style={{ textAlign: "center", fontSize: 15, }}>Nom et Prenom: <Text style={{ color: colors.black, fontWeight: "bold" }}>{`${devis?.nom} ${devis?.prenom}`}</Text></Text>
-                                        <Text style={{ textAlign: "center", fontSize: 15 }}>Type de demande: <Text style={{ color: colors.black, fontWeight: "bold" }}>{devis?.typeDemande === "Réabonnement" ? "Réabonnement" : devis?.typeDemande === "Nouveau" ? "Nouveau compteur" : "Augmentation de puissance"}</Text></Text>
-                                        <Text style={{ textAlign: "center", fontSize: 15 }}>Localisation: <Text style={{ color: colors.black, fontWeight: "bold" }}>{`${devis?.ville?.name}`}</Text></Text>
+                                        <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Nom et Prenom: <Text style={{ color: colors.black, fontWeight: "bold" }}>{`${devis?.nom} ${devis?.prenom}`}</Text></Text>
+                                        <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Type de demande: <Text style={{ color: colors.black, fontWeight: "bold" }}>{devis?.typeDemande === "Réabonnement" ? "Réabonnement" : devis?.typeDemande === "Nouveau" ? "Nouveau compteur" : "Augmentation de puissance"}</Text></Text>
+                                        <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Localisation: <Text style={{ color: colors.black, fontWeight: "bold" }}>{`${devis?.ville?.name}`}</Text></Text>
                                     </View>
                                 </View>
 
 
                                 <View>
-                                    <Text style={{ paddingLeft: 10, paddingBottom: 5 }}>Montant à payer</Text>
+                                    <Text style={{ paddingLeft: 10, paddingBottom: 5, color: colors.dark }}>Montant à payer</Text>
 
                                     <View style={[styles.input, { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 15 }]}>
-                                        <Text style={[{ paddingVertical: 15, fontWeight: "bold", color: colors.black, fontSize: 18 }]}>{devis?.amount}</Text>
+                                        <Text style={[{ paddingVertical: 15, fontWeight: "bold", color: colors.black, fontSize: 18, flexWrap: 'wrap' }]}>{formatNumberWithSpaces(devis?.amount)}</Text>
                                         <Text style={[{ paddingVertical: 15, fontWeight: "bold", color: colors.dark, fontSize: 18 }]}>fcfa</Text>
                                     </View>
                                 </View>

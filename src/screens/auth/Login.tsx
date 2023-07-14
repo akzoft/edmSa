@@ -12,7 +12,7 @@ const Login: FC<props> = ({ navigation }) => {
     const dispatch = useDispatch<any>();
     const [inputs, setinputs] = useState<ILoginReq>({ username: "", password: "", mobile: true, deviceId: "" })
     const [error, setError] = useState<string>()
-    const { errors, u_loading } = useSelector((state: RootState) => state?.user)
+    const { errors, user_loading } = useSelector((state: RootState) => state?.user)
 
 
     //display errors if exist
@@ -47,26 +47,26 @@ const Login: FC<props> = ({ navigation }) => {
                             <Text style={css.auth.subtitle}>Veuillez vous identifier</Text>
                         </View>
                         <View style={css.auth.form_item}>
-                            <TextInput style={css.auth.input} placeholder='Nom utilisateur/Téléphone' value={inputs.username} onChangeText={text => handleChangeMobile("username", text, setinputs)} />
+                            <TextInput style={css.auth.input} placeholderTextColor={'rgba(0,0,0,0.5)'} placeholder='Nom utilisateur/Téléphone' value={inputs.username} onChangeText={text => handleChangeMobile("username", text, setinputs)} />
                         </View>
                         <View style={css.auth.form_item}>
-                            <TextInput style={css.auth.input} secureTextEntry={true} placeholder='Mot de passe' value={inputs.password} onChangeText={text => handleChangeMobile("password", text, setinputs)} />
+                            <TextInput style={css.auth.input} placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={true} placeholder='Mot de passe' value={inputs.password} onChangeText={text => handleChangeMobile("password", text, setinputs)} />
                         </View>
 
                         <View style={css.auth.trybox}>
                             <Text style={css.auth.try}>Mot de passe </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("forgot")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Oublier ?</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("forgot")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Oublié ?</Text></TouchableOpacity>
                         </View>
 
                         <TouchableOpacity onPress={handleLogin} style={css.auth.button}>
-                            {u_loading ? <ActivityIndicator size={20} color={colors.white} pointerEvents="none" /> :
+                            {user_loading ? <ActivityIndicator size={20} color={colors.white} pointerEvents="none" /> :
                                 <Text style={{ color: colors.white, fontWeight: "bold" }}>Vérifier</Text>}
                         </TouchableOpacity>
 
 
                         <View style={[css.auth.trybox, { marginTop: 20 }]}>
                             <Text style={css.auth.try}>Vous n'avez pas encore de compte? </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate("register")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Inscriver vous</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("register")}><Text style={{ color: colors.main, textDecorationLine: "underline" }}>Inscrivez-vous</Text></TouchableOpacity>
                         </View>
                     </View>
 

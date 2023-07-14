@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { DevisCard, Tabs } from '../../components';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { CustomLoader, DevisCard, Tabs } from '../../components';
 import { useSelector } from 'react-redux';
 import { IDevisReq, RootState, colors } from '../../libs';
 import { Overlay } from 'react-native-elements';
@@ -9,7 +9,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 export default function DevisList() {
     const [activeTab, setActiveTab] = useState<number>(0);
     const scrollViewRef = useRef<any>(null)
-    const { devis } = useSelector((state: RootState) => state?.devis)
+    const { devis, s_loading } = useSelector((state: RootState) => state?.devis)
     const [valides, setValides] = useState<IDevisReq[]>([]);
     const [attentes, setAttentes] = useState<IDevisReq[]>([]);
     const [rejetes, setRejetes] = useState<IDevisReq[]>([]);
@@ -52,6 +52,9 @@ export default function DevisList() {
                 return null;
         }
     };
+
+    if ((s_loading))
+        return <CustomLoader />
 
 
     return (
@@ -96,7 +99,7 @@ const styles = StyleSheet.create({
     sheet_title: { color: colors.dark, fontWeight: "300", letterSpacing: 1.5, fontSize: 22 },
     sheet_close: { color: colors.danger },
     desc_container: { flexGrow: 1, paddingVertical: 15 },
-    desc: { fontWeight: "300", textAlign: "justify" },
+    desc: { fontWeight: "300", textAlign: "justify", color: colors.dark },
     screen_title_line: { width: "60%", height: 4, backgroundColor: colors.main, borderRadius: 50, marginVertical: 15, marginBottom: 5 },
     separator: { height: 50 }
 })

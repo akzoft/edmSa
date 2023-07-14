@@ -1,20 +1,23 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
 import { ICompteur, IISAGOsearch, RootState, colors, images, searchISAGO } from '../../libs'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
+import { CustomLoader } from '../../components'
 
 const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
     const dispatch = useDispatch<any>()
     const [searchText, setSearchText] = useState<string>();
-    const { auth } = useSelector((state: RootState) => state?.user)
-    const { isago, tmp } = useSelector((state: RootState) => state?.isago)
-    const { isago_cpt } = useSelector((state: RootState) => state?.compteur)
+    const [click, setClick] = useState(false);
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const { isago, tmp, isago_loading } = useSelector((state: RootState) => state?.isago)
+    const { isago_cpt, c_loading } = useSelector((state: RootState) => state?.compteur)
 
     useEffect(() => {
         if (tmp) {
             navigation.navigate("resultat_isago", { isago })
             dispatch({ type: "reset_tmp" })
+            setClick(false)
         }
     }, [tmp]);
 
@@ -26,8 +29,11 @@ const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
         }
         if (auth)
             dispatch(searchISAGO(data, auth?.accessToken));
+        setClick(true)
     }
 
+    if (!click && (isago_loading || user_loading || c_loading))
+        return <CustomLoader />
 
     return (
         <View style={styles.container}>
@@ -59,20 +65,18 @@ const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
                         <View style={{ width: "100%", gap: 20 }}>
 
                             <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Paiement ISAGO</Text>
-                            <Text style={{ textAlign: "center" }}>Veuillez inserer dans le champ ci-dessous, votre numéro de compteur ISAGO</Text>
+                            <Text style={{ textAlign: "center", color: colors.dark }}>Veuillez insérer dans le champ ci-dessous, votre numéro de compteur ISAGO</Text>
 
                             <View>
-                                <TextInput placeholder='Numéro de compteur' value={searchText} onChangeText={text => setSearchText(text)} style={styles.input} />
+                                <TextInput placeholder='Numéro du compteur' placeholderTextColor={'rgba(0,0,0,0.5)'} value={searchText} onChangeText={text => setSearchText(text)} style={styles.input} />
                             </View>
 
                             <View style={{ gap: 15 }}>
                                 <TouchableOpacity onPress={handleSearch} style={styles.button}>
-                                    <Text style={styles.btn_text}>Rechercher</Text>
+                                    {!isago_loading ? <Text style={styles.btn_text}>Rechercher</Text> :
+                                        <ActivityIndicator size={'small'} color={'white'} />
+                                    }
                                 </TouchableOpacity>
-
-                                {/* <TouchableOpacity style={styles.button}>
-                                    <Text style={styles.btn_text}>Consulter un reçu</Text>
-                                </TouchableOpacity> */}
                             </View>
                         </View>
                     </View>
@@ -137,7 +141,7 @@ const styles = StyleSheet.create({
     forms: {
         flex: 1, alignItems: "center", gap: 10, justifyContent: "center", padding: 30
     },
-    input: { width: "100%", borderWidth: 0.5, borderColor: colors.white, borderRadius: 5, backgroundColor: colors.white, paddingHorizontal: 10 },
+    input: { width: "100%", borderWidth: 0.5, color: colors.main, borderColor: colors.white, borderRadius: 5, backgroundColor: colors.white, paddingHorizontal: 10 },
     button: { padding: 15, borderRadius: 5, width: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.main },
     btn_text: { textAlign: "center", fontWeight: "bold", color: colors.white }
 })

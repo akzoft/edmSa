@@ -1,23 +1,25 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
 import { RootState, colors, getAllFacture, images, searchFacture } from '../../libs'
 import { useDispatch, useSelector } from 'react-redux'
 import { ICompteur, IFactureSearchReq } from '../../libs/others/models'
 import { useNavigation } from '@react-navigation/native'
+import { CustomLoader } from '../../components'
 
 const RechercheFacture: FC<any> = ({ navigation }) => {
     const dispatch = useDispatch<any>()
     const [searchText, setSearchText] = useState<string>();
-    const { auth } = useSelector((state: RootState) => state?.user)
-    const { facture, tmp } = useSelector((state: RootState) => state?.facture)
-    const { classics_cpt } = useSelector((state: RootState) => state?.compteur)
-
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const { facture, tmp, facture_loading } = useSelector((state: RootState) => state?.facture)
+    const { classics_cpt, c_loading } = useSelector((state: RootState) => state?.compteur)
+    const [click, setClick] = useState(false);
 
 
     useEffect(() => {
         if (tmp) {
             navigation.navigate("paiement_facture", { facture })
             dispatch({ type: "reset_tmp" })
+            setClick(false)
         }
     }, [tmp]);
 
@@ -28,9 +30,12 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
             customerId: auth?.id,
         }
 
-        if (auth)
-            dispatch(searchFacture(data, auth?.accessToken));
+        if (auth) dispatch(searchFacture(data, auth?.accessToken));
+        setClick(true)
     }
+
+    if (!click && (facture_loading || c_loading || user_loading))
+        return <CustomLoader />
 
     return (
         <View style={styles.container}>
@@ -38,15 +43,13 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
 
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={{ padding: 10, marginTop: 15 }}>
-                        {classics_cpt?.length > 0 && <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs POST-PAIE</Text>}
+                        {classics_cpt?.length > 0 && <Text style={{ fontSize: 15, color: colors.black, fontWeight: "500" }}>Mes compteurs POST PAID</Text>}
                         <View style={{ marginTop: 10 }}>
                             <FlatList
                                 data={classics_cpt}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                                 renderItem={({ item }) => {
-
-
                                     return <View>
                                         <CompteurSmallCard key={item.id.toString()} compteur={item} />
                                     </View>
@@ -59,29 +62,20 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
                     </View>
 
 
-
-
                     <View style={[styles.forms, { padding: 30 }]}>
                         <View style={{ width: "100%", gap: 20 }}>
 
-                            <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>FACTURE POST-PAIE</Text>
-                            <Text style={{ textAlign: "center" }}>Veuillez inserer votre réference client dans le champ ci-dessous.</Text>
+                            <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>FACTURE POST PAID</Text>
+                            <Text style={{ textAlign: "center", color: colors.dark }}>Veuillez indiquer votre référence client dans la case ci-dessous.</Text>
 
                             <View>
-                                <TextInput placeholder='Réference client' style={styles.input} value={searchText} onChangeText={(text) => setSearchText(text)} />
+                                <TextInput placeholder='Référence client' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={searchText} onChangeText={(text) => setSearchText(text)} />
                             </View>
 
                             <View style={{ gap: 15 }}>
                                 <TouchableOpacity onPress={handleSearch} style={styles.button}>
-                                    <Text style={styles.btn_text}>Rechercher la facture</Text>
-                                </TouchableOpacity>
-
-                                {/* <TouchableOpacity onPress={() => navigation.navigate("liste_facture")} style={styles.button}>
-                                    <Text style={styles.btn_text}>Consulter les factures</Text>
-                                </TouchableOpacity> */}
-
-                                <TouchableOpacity style={styles.button}>
-                                    <Text style={styles.btn_text}>Consulter un reçu</Text>
+                                    {!facture_loading ? <Text style={styles.btn_text}>Rechercher la facture</Text> :
+                                        <ActivityIndicator size={'small'} color={'white'} />}
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -139,7 +133,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.main, },
     content: { flex: 1, backgroundColor: colors.body },
     forms: { flex: 1, alignItems: "center", gap: 10, justifyContent: "center", },
-    input: { width: "100%", borderWidth: 0.5, borderColor: colors.white, borderRadius: 5, backgroundColor: colors.white, paddingHorizontal: 10 },
+    input: { width: "100%", borderWidth: 0.5, borderColor: colors.white, borderRadius: 5, color: colors.main, backgroundColor: colors.white, paddingHorizontal: 10 },
     button: { padding: 15, borderRadius: 5, width: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.main },
     btn_text: { textAlign: "center", fontWeight: "bold", color: colors.white }
 })

@@ -1,7 +1,7 @@
-import { Animated, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Animated, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { NotificationCard } from '../../components';
+import { CustomLoader, NotificationCard } from '../../components';
 import { ICompteur, ReadNotification, RootState, colors, create_compteur, deleteOneNotification, delete_compteur, getAllCompteur, getAllNotifications, handleChangeMobile, images, reverseArray, update, update_compteur } from '../../libs';
 import { Overlay } from 'react-native-elements';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -29,9 +29,10 @@ const Parametre: FC<any> = ({ navigation, route }) => {
     const [typeCompteur, setTypeCompteur] = useState<string>("ISAGO");
     const [typeEditCompteur, setTypeEditCompteur] = useState<string>("");
     const [edit, setEdit] = useState(false);
+    const [click, setClick] = useState(false);
     const [compteur, setCompteur] = useState<ICompteur>({ id: "", number: "", label: "", type: "" });
-    const { temps, auth } = useSelector((state: RootState) => state?.user)
-    const { tmp, temp, compteurs, tmp_del } = useSelector((state: RootState) => state?.compteur)
+    const { temps, auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const { tmp, temp, compteurs, tmp_del, c_loading } = useSelector((state: RootState) => state?.compteur)
 
 
     useEffect(() => {
@@ -62,7 +63,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                 useNativeDriver: true,
             }).start();
         }
-    }, [fadeAnim, isFocused]);
+    }, [fadeAnim, isFocused, user_loading, c_loading]);
 
     const toggleOverlay = () => { setVisible(!visible) }
     const toggleOverlay1 = () => { setVisible1(!visible1) }
@@ -74,6 +75,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             setInputsCompteur(init)
             toggleOverlay1();
             dispatch({ type: "reset_tmp" });
+            setClick(false)
         }
     }, [tmp]);
 
@@ -83,6 +85,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             setCompteur(init)
             toggleOverlay2();
             dispatch({ type: "reset_temp" });
+            setClick(false)
         }
     }, [temp]);
 
@@ -94,6 +97,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                 dispatch(getAllCompteur(auth?.id, auth?.accessToken));
                 toggleOverlay2();
                 dispatch({ type: "reset_tmp_del" });
+                setClick(false)
             }
     }, [tmp_del]);
 
@@ -104,6 +108,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             setInputsUserEdit(userEditInit)
             toggleOverlay();
             dispatch({ type: "reset_temps" });
+            setClick(false)
         }
     }, [temps]);
 
@@ -130,6 +135,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             inputsCompteur.type = typeCompteur
 
             dispatch(create_compteur(inputsCompteur, auth?.accessToken));
+            setClick(true)
 
         }
     }
@@ -150,13 +156,14 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             compteur.type = typeCompteur
 
             dispatch(update_compteur(compteur?.id, compteur, auth?.accessToken));
-
+            setClick(true)
         }
     }
 
     const handleDelete = () => {
         if (auth)
             dispatch(delete_compteur(compteur?.id, auth?.accessToken))
+        setClick(true)
     }
 
     //gestion edition utilisateur
@@ -171,13 +178,16 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             dispatch(update(auth?.id, inputsUserEdit, auth?.accessToken))
     }
 
+    if (!click && (user_loading || c_loading))
+        return <CustomLoader />
+
 
 
     return (
         <Animated.View ref={viewRef} style={[styles.container, { opacity: fadeAnim, flex: 1 }]}>
             <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle={[styles.bottomSheet]} animationType="slide">
                 <View style={styles.sheet_header}>
-                    <Text style={[styles.sheet_title]}>Modification profile</Text>
+                    <Text style={[styles.sheet_title]}>Modifier mes informations</Text>
                     <TouchableOpacity activeOpacity={0.7} onPress={toggleOverlay}><Fontisto name="close-a" size={18} style={styles.sheet_close} /></TouchableOpacity>
                 </View>
 
@@ -187,14 +197,14 @@ const Parametre: FC<any> = ({ navigation, route }) => {
 
                     <View style={{ gap: 10 }}>
                         <View style={{ gap: 5 }}>
-                            <Text>Nom complet </Text>
-                            <TextInput value={inputsUserEdit.name} onChangeText={text => handleChangeMobile("name", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ color: colors.dark }}>Nom complet </Text>
+                            <TextInput value={inputsUserEdit.name} onChangeText={text => handleChangeMobile("name", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.name}</Text>
                         </View>
 
                         <View style={{ gap: 5 }}>
-                            <Text>Nom d'utilisateur</Text>
-                            <TextInput value={inputsUserEdit.username} onChangeText={text => handleChangeMobile("username", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ color: colors.dark }}>Nom d'utilisateur</Text>
+                            <TextInput value={inputsUserEdit.username} onChangeText={text => handleChangeMobile("username", text, setInputsUserEdit)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.username}</Text>
                         </View>
                     </View>
@@ -217,17 +227,17 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={styles.desc_container}>
                     <View style={{ gap: 10 }}>
                         <View style={{ gap: 5 }}>
-                            <Text>Label <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
-                            <TextInput value={inputsCompteur.label} onChangeText={text => handleChangeMobile("label", text, setInputsCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ color: colors.dark }}>Label <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
+                            <TextInput value={inputsCompteur.label} onChangeText={text => handleChangeMobile("label", text, setInputsCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.label}</Text>
                         </View>
 
-                        <Text>Type de compteur</Text>
+                        <Text style={{ color: colors.dark }}>Type de compteur</Text>
 
                         <View style={[styles.input,]}>
                             <Picker
                                 selectedValue={typeCompteur}
-                                onValueChange={(val) => setTypeCompteur(val)}>
+                                onValueChange={(val) => setTypeCompteur(val)} style={{ color: colors.dark }}>
                                 <Picker.Item label="Compteur ISAGO" value="ISAGO" />
                                 <Picker.Item label="Compteur CLASSIC" value="CLASSIC" />
 
@@ -236,8 +246,8 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                         <Text style={{ fontSize: 10, color: colors.danger }}>{error.type}</Text>
 
                         <View style={{ gap: 5 }}>
-                            <Text>Numéro compteur/Réference client</Text>
-                            <TextInput value={inputsCompteur.number} onChangeText={text => handleChangeMobile("number", text, setInputsCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                            <Text style={{ color: colors.dark }}>Numéro compteur/Réference client</Text>
+                            <TextInput value={inputsCompteur.number} placeholderTextColor={'rgba(0,0,0,0.5)'} onChangeText={text => handleChangeMobile("number", text, setInputsCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.number}</Text>
                         </View>
                     </View>
@@ -270,17 +280,17 @@ const Parametre: FC<any> = ({ navigation, route }) => {
 
                         {edit && <>
                             <View style={{ gap: 5 }}>
-                                <Text>Label <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
-                                <TextInput value={compteur.label} onChangeText={text => handleChangeMobile("label", text, setCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                                <Text style={{ color: colors.dark }}>Label <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
+                                <TextInput value={compteur.label} placeholderTextColor={'rgba(0,0,0,0.5)'} onChangeText={text => handleChangeMobile("label", text, setCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                                 <Text style={{ fontSize: 10, color: colors.danger }}>{error.label}</Text>
                             </View>
 
-                            <Text>Type de compteur</Text>
+                            <Text style={{ color: colors.dark }}>Type de compteur</Text>
 
                             <View style={[styles.input,]}>
                                 <Picker
                                     selectedValue={typeEditCompteur}
-                                    onValueChange={(val) => setTypeEditCompteur(val)}>
+                                    onValueChange={(val) => setTypeEditCompteur(val)} style={{ color: colors.dark }}>
                                     <Picker.Item label="Compteur ISAGO" value="ISAGO" />
                                     <Picker.Item label="Compteur CLASSIC" value="CLASSIC" />
 
@@ -289,8 +299,8 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.type}</Text>
 
                             <View style={{ gap: 5 }}>
-                                <Text>Numéro compteur/Réference client</Text>
-                                <TextInput value={compteur.number} onChangeText={text => handleChangeMobile("number", text, setCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15 }} />
+                                <Text style={{ color: colors.dark }}>Numéro compteur/Réference client</Text>
+                                <TextInput value={compteur.number} onChangeText={text => handleChangeMobile("number", text, setCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                                 <Text style={{ fontSize: 10, color: colors.danger }}>{error.number}</Text>
                             </View>
                         </>}
@@ -312,11 +322,11 @@ const Parametre: FC<any> = ({ navigation, route }) => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
 
                 <View style={{ padding: 15 }}>
-                    <Ionicons name="ios-person-circle-sharp" size={100} />
+                    <Ionicons name="ios-person-circle-sharp" size={100} color={colors.dark} />
                     <View style={{ paddingLeft: 15 }}>
-                        <Text>Nom complet: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.name}</Text></Text>
-                        <Text>Nom utilisateur: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.username}</Text></Text>
-                        <Text>N° tel: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.phone}</Text></Text>
+                        <Text style={{ color: colors.dark }}>Nom complet: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.name}</Text></Text>
+                        <Text style={{ color: colors.dark }}>Nom utilisateur: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.username}</Text></Text>
+                        <Text style={{ color: colors.dark }}>N° téléphone: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.phone}</Text></Text>
                         {auth?.email && <Text>Email: <Text style={{ color: colors.black, fontWeight: "600" }}>{auth?.email}</Text></Text>}
                     </View>
                 </View>
@@ -344,7 +354,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                 <View style={styles.content}>
                     <TouchableOpacity onPress={toggleOverlay} activeOpacity={1} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, flexDirection: "row", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
                         <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
-                            <View style={{ width: 35, height: 35, alignItems: "center", justifyContent: "center", padding: 5, backgroundColor: colors.white, borderRadius: 5 }}><FontAwesome name='user' size={20} /></View>
+                            <View style={{ width: 35, height: 35, alignItems: "center", justifyContent: "center", padding: 5, backgroundColor: colors.white, borderRadius: 5 }}><FontAwesome name='user' size={20} color={colors.dark} /></View>
                             <Text style={{ color: colors.white }}>Modifier mes informations</Text>
                         </View>
 
@@ -354,7 +364,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
 
                     <TouchableOpacity onPress={toggleOverlay1} activeOpacity={1} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, flexDirection: "row", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
                         <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
-                            <View style={{ width: 35, height: 35, alignItems: "center", justifyContent: "center", padding: 5, backgroundColor: colors.white, borderRadius: 5 }}><MaterialCommunityIcons name='electric-switch-closed' size={20} /></View>
+                            <View style={{ width: 35, height: 35, alignItems: "center", justifyContent: "center", padding: 5, backgroundColor: colors.white, borderRadius: 5 }}><MaterialCommunityIcons name='electric-switch-closed' size={20} color={colors.dark} /></View>
                             <Text style={{ color: colors.white }}>Ajouter un nouveau compteur</Text>
                         </View>
 
@@ -400,13 +410,14 @@ const CompteurSmallCard: FC<{ compteur: ICompteur, toggleOverlay2: any, setCompt
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "center", backgroundColor: colors.body },
     content: { width: "100%", padding: 10, paddingHorizontal: 15, gap: 10, justifyContent: "center" },
-    bottomSheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingVertical: 10, width: "100%", position: "absolute", height: "50%", bottom: 0 },
+    bottomSheet: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingVertical: 10, width: "100%", position: "absolute", height: "70%", bottom: 0 },
     sheet_header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     sheet_title: { color: colors.dark, fontWeight: "300", letterSpacing: 1.5, fontSize: 18 },
     sheet_close: { color: colors.danger },
-    desc_container: { flexGrow: 1, paddingVertical: 15, justifyContent: "center", gap: 10 },
+    desc_container: { flexGrow: 1, paddingVertical: 15, gap: 10 },
     desc: { fontWeight: "300", textAlign: "justify" },
     screen_title_line: { width: "60%", height: 4, backgroundColor: colors.main, borderRadius: 50, marginVertical: 15, marginBottom: 5 },
     separator: { height: 20 },
     input: { borderWidth: 0.5, borderColor: colors.dark, borderRadius: 5, paddingLeft: 15, color: colors.main },
+    label: { color: colors.dark }
 })

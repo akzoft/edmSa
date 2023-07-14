@@ -5,7 +5,7 @@ import { IDevisReq, api_fichiers, colors, devis_validation3, images } from "../.
 type TFiles = { proTitrePropriete: any, quittusEdm: any, proCopieIdentite: any, proCopieVisa: any, locTitrePropriete: any, autBranchement: any, locCopieIdentiteProprietaire: any, locCopieIdentiteLocataire: any, locCopieVisa: any }
 type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, setActiveTab: any, setVal: any, inputs: IDevisReq, setInputs: any, files: TFiles, setFiles: any }
 const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab, setVal, inputs }) => {
-
+    var dot = 4;
 
     const handleNext = () => {
         setActiveTab((prevTab: number) => (prevTab < tabs.length - 1 ? prevTab + 1 : prevTab));
@@ -20,13 +20,11 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
 
     return (
         <View>
-            <View style={{ flexDirection: "row", marginVertical: 15 }}>
-                {[1, 2, 3, 4, 5]?.map(dot => (
-                    <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ flex: 1, height: 1, backgroundColor: colors.dark }} />
-                        <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: dot === 4 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
-                        <View style={{ width: "15%", height: 1, backgroundColor: dot === 4 ? colors.primary : colors.dark }} />
-                    </View>))}
+            <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot !== 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{5}</Text></View>
+                </View>
             </View>
 
 
@@ -40,16 +38,16 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
                 <View style={{ paddingHorizontal: 10, gap: 15 }}>
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "center" }}>
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            <Image source={{ uri: `${api_fichiers}/${inputs?.proTitrePropriete}` }} style={{ width: "90%", height: 80 }} />
+                            <Image source={{ uri: `${api_fichiers}/${inputs?.proTitrePropriete}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} />
                             <View >
-                                <Text style={{ textAlign: "center" }}>Titre de propriété ou équivalent</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Titre de propriété ou équivalent</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            <Image source={{ uri: `${api_fichiers}/${inputs?.quittusEdm}` }} style={{ width: "90%", height: 80 }} />
+                            <Image source={{ uri: `${api_fichiers}/${inputs?.quittusEdm}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} />
                             <View >
-                                <Text style={{ textAlign: "center" }}>Quitus EDM / point de livraison</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Quitus EDM / point de livraison</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -57,16 +55,16 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
 
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "center" }}>
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            <Image source={{ uri: `${api_fichiers}/${inputs?.proCopieIdentite}` }} style={{ width: "90%", height: 80 }} />
+                            <Image source={{ uri: `${api_fichiers}/${inputs?.proCopieIdentite}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} />
                             <View >
-                                <Text style={{ textAlign: "center" }}>Copie carte ID ou NINA ou PP</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Copie carte ID ou NINA ou PP</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            <Image source={{ uri: `${api_fichiers}/${inputs?.proCopieVisa}` }} style={{ width: "90%", height: 80 }} />
+                            <Image source={{ uri: `${api_fichiers}/${inputs?.proCopieVisa}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} />
                             <View >
-                                <Text style={{ textAlign: "center" }}>Copie VISA conformité ACAVIF</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Copie VISA conformité ACAVIF</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -77,16 +75,16 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
                 <View style={{ paddingHorizontal: 10, gap: 15 }}>
                     <View style={{ marginTop: 10, flexDirection: "row", width: "100%", justifyContent: "center" }}>
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            {inputs?.locTitrePropriete ? <Image source={{ uri: `${api_fichiers}/${inputs?.locTitrePropriete}` }} style={{ width: "90%", height: 80 }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
+                            {inputs?.locTitrePropriete ? <Image source={{ uri: `${api_fichiers}/${inputs?.locTitrePropriete}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
                             <View >
-                                <Text style={{ textAlign: "center" }}>Titre de propriété ou équivalent</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Titre de propriété ou équivalent</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            {inputs?.autBranchement ? <Image source={{ uri: `${api_fichiers}/${inputs?.autBranchement}` }} style={{ width: "90%", height: 80 }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
+                            {inputs?.autBranchement ? <Image source={{ uri: `${api_fichiers}/${inputs?.autBranchement}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
                             <View >
-                                <Text style={{ textAlign: "center" }}>Attestation Aut. branchement</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Attestation Aut. branchement</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -94,24 +92,24 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
 
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "center" }}>
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            {inputs?.locCopieIdentiteProprietaire ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieIdentiteProprietaire}` }} style={{ width: "90%", height: 80 }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
+                            {inputs?.locCopieIdentiteProprietaire ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieIdentiteProprietaire}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
                             <View >
-                                <Text style={{ textAlign: "center" }}>Copie carte ID ou NINA ou PP / proprio</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Copie carte ID ou NINA ou PP / proprio</Text>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                            {inputs?.locCopieIdentiteLocataire ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieIdentiteLocataire}` }} style={{ width: "90%", height: 80 }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
+                            {inputs?.locCopieIdentiteLocataire ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieIdentiteLocataire}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
                             <View >
-                                <Text style={{ textAlign: "center" }}>Copie carte ID ou NINA ou PP / local</Text>
+                                <Text style={{ textAlign: "center", color: colors.dark }}>Copie carte ID ou NINA ou PP / local</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity activeOpacity={0.8} style={{ flex: 1, alignItems: "center" }} >
-                        {inputs?.locCopieVisa ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieVisa}` }} style={{ width: "90%", height: 80 }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
+                        {inputs?.locCopieVisa ? <Image source={{ uri: `${api_fichiers}/${inputs?.locCopieVisa}` }} style={{ width: "100%", height: 100, resizeMode: 'contain' }} /> : <Text style={{ color: colors.black, fontWeight: "bold" }}>N/A</Text>}
                         <View >
-                            <Text style={{ textAlign: "center" }}>Copie VISA conformité ACAVIF</Text>
+                            <Text style={{ textAlign: "center", color: colors.dark }}>Copie VISA conformité ACAVIF</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -119,7 +117,7 @@ const InfosDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTab,
 
             <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
                 <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                    <Text style={styles.button_text}>Précedent</Text>
+                    <Text style={styles.button_text}>Précédent</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={handleNext} disabled={activeTab === tabs.length - 1} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >

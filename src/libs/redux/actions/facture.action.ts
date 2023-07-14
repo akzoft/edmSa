@@ -4,7 +4,7 @@ import { IFactureSearchReq } from "../../others/models"
 
 export const getAllFacture = (userId: string, token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "f_loading" })
+        dispatch({ type: "facture_loading" })
         const ans = await axios.get(`${api}/invoices/${userId}/customer`, { headers: { Authorization: `Bearer ${token}` } })
         dispatch({ type: "get_factures_reussie", payload: ans.data })
     } catch (error: any) {
@@ -15,7 +15,7 @@ export const getAllFacture = (userId: string, token: string) => async (dispatch:
 
 export const searchFacture = (data: IFactureSearchReq, token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "f_loading" })
+        dispatch({ type: "facture_loading" })
 
         const ans = await axios.post(`${api}/invoices`, data, { headers: { Authorization: `Bearer ${token}` } })
 
@@ -28,7 +28,7 @@ export const searchFacture = (data: IFactureSearchReq, token: string) => async (
 
 export const paiement_facture = (data: IFactureSearchReq, token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "f_loading" })
+        dispatch({ type: "facture_loading" })
 
         const ans = await axios.post(`${api}/invoices/payment`, data, { headers: { Authorization: `Bearer ${token}` } })
         console.log(ans.data)

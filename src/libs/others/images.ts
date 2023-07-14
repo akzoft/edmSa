@@ -1,6 +1,6 @@
 export const images = {
     logo_min: require("./assets/edm_logo_min.jpg"),
-    logo: require("./assets/edm_logo.jpg"),
+    logo: require("./assets/edm_logo2.jpg"),
     logoT: require("./assets/edm_logo.png"),
 
     n1: require("./assets/n1.jpg"),
@@ -10,5 +10,17 @@ export const images = {
     n5: require("./assets/n5.jpg"),
     vitepay: require("./assets/vp_logo.png"),
     profile_avatar: require("./assets/profile.png"),
-    compteur: require("./assets/compteur.png")
+    compteur: require("./assets/compteur.png"),
+    assistance: require("./assets/assistance.png"),
+    assistance_blue: require("./assets/assistance_blue.png"),
+    ico_facture: require("./assets/ico_facture.png"),
+    ico_actualite: require("./assets/ico_actualite.png"),
+    ico_devis: require("./assets/ico_devis.png"),
+    ico_historique: require("./assets/ico_historique.png"),
+    ico_historique_dark: require("./assets/ico_historique_dark.png"),
+    ico_compteur: require("./assets/ico_compteur.png"),
+    ico_info: require("./assets/ico_info.png"),
+    ico_home: require("./assets/home.png"),
+    ico_historique_btab_blue: require("./assets/ico_historique_btab_blue.png"),
+    ico_historique_btab_dark: require("./assets/ico_historique_btab_dark.png"),
 }

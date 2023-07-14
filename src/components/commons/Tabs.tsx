@@ -22,7 +22,7 @@ const Tabs: FC<props> = ({ tabs, activeTab, onPressTab, canChangeTab }) => {
                     ]}
                     onPress={() => handlePressTab(index)}
                 >
-                    <Text style={[activeTab === index && styles.activeTabText]}>{tab.title}</Text>
+                    <Text style={[activeTab === index ? styles.activeTabText : { color: colors.dark }]}>{tab.title}</Text>
                 </TouchableOpacity>
             ))}
         </View>

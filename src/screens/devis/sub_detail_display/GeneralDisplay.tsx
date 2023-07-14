@@ -38,13 +38,11 @@ const GeneralDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTa
 
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 25 }}>
-                {activeSection?.map(dot => (
-                    <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ flex: 1, height: 1, backgroundColor: currentSection === dot ? colors.primary : colors.dark }} />
-                        <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: currentSection === dot ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot + 1}</Text></View>
-                        <View style={{ width: "15%", height: 1, backgroundColor: currentSection === dot ? colors.primary : colors.dark }} />
-                    </View>))}
+            <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 25 }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: currentSection !== 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{currentSection + 1}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: currentSection === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{activeSection?.length}</Text></View>
+                </View>
             </View>
 
 
@@ -85,63 +83,63 @@ const GeneralDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTa
                     <View style={[styles.forms, { marginBottom: 15 }]}>
                         <View style={styles.form_item}>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Climatiseurs: <Text style={styles.inf}>{inputs?.climatiseur || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Climatiseurs: <Text style={styles.inf}>{inputs?.climatiseur || "N/A"}</Text></Text>
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Ventilateurs: <Text style={styles.inf}>{inputs?.ventilateur || "N/A"}</Text></Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Machine à laver: <Text style={styles.inf}>{inputs?.machineLaver || "N/A"}</Text></Text>
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Ampoules: <Text style={styles.inf}>{inputs?.ampoule || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Ventilateurs: <Text style={styles.inf}>{inputs?.ventilateur || "N/A"}</Text></Text>
                             </View>
                         </View>
 
                         <View style={styles.form_item}>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Chauffe eau:  <Text style={styles.inf}>{inputs?.chauffeEau || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Machine à laver: <Text style={styles.inf}>{inputs?.machineLaver || "N/A"}</Text></Text>
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Ordinateurs: <Text style={styles.inf}>{inputs?.ordinateur || "N/A"}</Text></Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Congélateurs: <Text style={styles.inf}>{inputs?.congelateur || "N/A"}</Text></Text>
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Réfrigerateurs: <Text style={styles.inf}>{inputs?.refrigerateur || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Ampoules: <Text style={styles.inf}>{inputs?.ampoule || "N/A"}</Text></Text>
                             </View>
                         </View>
 
                         <View style={styles.form_item}>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Téléviseur: <Text style={styles.inf}>{inputs?.televiseur || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Chauffe eau:  <Text style={styles.inf}>{inputs?.chauffeEau || "N/A"}</Text></Text>
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Boulloire électrique: <Text style={styles.inf}>{inputs?.bouilloireElectrique || "N/A"}</Text></Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.form_item}>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Fer à repasser: <Text style={styles.inf}>{inputs?.ferRepasser || "N/A"}</Text></Text>
-
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text>Nb. Téléphone: <Text style={styles.inf}>{inputs?.telephone || "N/A"}</Text></Text>
-
+                                <Text style={{ color: colors.dark }}>Nb. Ordinateurs: <Text style={styles.inf}>{inputs?.ordinateur || "N/A"}</Text></Text>
                             </View>
                         </View>
 
                         <View style={styles.form_item}>
                             <View style={{ flex: 1 }}>
-                                <Text>Nb. Autres: <Text style={styles.inf}>{inputs?.autre || "N/A"}</Text></Text>
+                                <Text style={{ color: colors.dark }}>Nb. Congélateurs: <Text style={styles.inf}>{inputs?.congelateur || "N/A"}</Text></Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Réfrigerateurs: <Text style={styles.inf}>{inputs?.refrigerateur || "N/A"}</Text></Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.form_item}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Téléviseur: <Text style={styles.inf}>{inputs?.televiseur || "N/A"}</Text></Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Boulloire électrique: <Text style={styles.inf}>{inputs?.bouilloireElectrique || "N/A"}</Text></Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.form_item}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Fer à repasser: <Text style={styles.inf}>{inputs?.ferRepasser || "N/A"}</Text></Text>
+
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Téléphone: <Text style={styles.inf}>{inputs?.telephone || "N/A"}</Text></Text>
+
+                            </View>
+                        </View>
+
+                        <View style={styles.form_item}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: colors.dark }}>Nb. Autres: <Text style={styles.inf}>{inputs?.autre || "N/A"}</Text></Text>
                             </View>
                         </View>
                     </View>
@@ -152,7 +150,7 @@ const GeneralDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTa
                     <View style={{ flexDirection: "row", gap: 10 }}>
                         {currentSection > 0 && (
                             <TouchableOpacity onPress={goToPreviousSection} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                                <Text style={styles.button_text}>Précedent</Text>
+                                <Text style={styles.button_text}>Précédent</Text>
                             </TouchableOpacity>
                         )}
 
@@ -188,7 +186,7 @@ const GeneralDisplay: FC<props> = ({ scrollViewRef, tabs, activeTab, setActiveTa
                     <View style={{ flexDirection: "row", gap: 10 }}>
                         {currentSection > 0 && (
                             <TouchableOpacity onPress={goToPreviousSection} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                                <Text style={styles.button_text}>Précedent</Text>
+                                <Text style={styles.button_text}>Précédent</Text>
                             </TouchableOpacity>
                         )}
 
@@ -217,7 +215,7 @@ const styles = StyleSheet.create({
     required: { color: colors.warning },
     info: { fontSize: 10, fontStyle: "italic" },
     inf: { fontWeight: "bold", paddingLeft: 20, color: colors.black },
-    label: { marginVertical: 4, paddingLeft: 10 },
+    label: { marginVertical: 4, paddingLeft: 10, color: colors.dark },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
     button_text: { textAlign: "center", fontWeight: "bold", color: colors.white }
 })

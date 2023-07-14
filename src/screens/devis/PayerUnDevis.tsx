@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { DevisCard, Tabs } from '../../components';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { CustomLoader, DevisCard, Tabs } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { IDevisReq, RootState, colors, getAllDevi, reverseArray } from '../../libs';
 
 export default function PayerUnDevis() {
     const [activeTab, setActiveTab] = useState<number>(0);
     const scrollViewRef = useRef<any>(null)
-    const { devis } = useSelector((state: RootState) => state?.devis)
+    const { devis, s_loading } = useSelector((state: RootState) => state?.devis)
     const [valides, setValides] = useState<IDevisReq[]>([]);
     const [attentes, setAttentes] = useState<IDevisReq[]>([]);
     const [rejetes, setRejetes] = useState<IDevisReq[]>([]);
@@ -39,6 +39,8 @@ export default function PayerUnDevis() {
         }
     };
 
+    if ((s_loading))
+        return <CustomLoader />
 
     return (
         <View style={styles.container}>

@@ -28,6 +28,6 @@ export default InfoCard
 const styles = StyleSheet.create({
     container: { borderWidth: 0.3, borderColor: colors.main, width: "100%", height: 360, marginBottom: 10, borderRadius: 5 },
     infos: { gap: 10, padding: 10 },
-    title: { fontSize: 20, fontWeight: "bold", letterSpacing: 1, color: colors.black },
-    content: { textAlign: "justify" }
+    title: { fontSize: 18, fontWeight: "bold", letterSpacing: 1, color: colors.black },
+    content: { textAlign: "justify", color: colors.dark }
 })

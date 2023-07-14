@@ -29,7 +29,7 @@ const DevisStack: FC<{ route: any }> = ({ route }) => {
             <stack.Screen name="demande_devis" component={DemandeDevis} options={{ title: "Nouveau devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
             <stack.Screen name="devis_list" component={DevisList} options={{ title: "Liste de devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
             <stack.Screen name="devis_paiement" component={PaiementDevis} options={{ title: "Paiement devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
-            <stack.Screen name="devis_details" component={DevisDetails} options={{ title: "Details du devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="devis_details" component={DevisDetails} options={{ title: "Détails du devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
             <stack.Screen name="payer_un_devis" component={PayerUnDevis} options={{ title: "Payer un devis", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
         </stack.Navigator>
 

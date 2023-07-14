@@ -29,7 +29,6 @@ const NotificationStack: FC<{ route: any }> = ({ route }) => {
             <stack.Screen name='notification' component={Notification} options={{ headerShown: true, title: "Notifications", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} stack={true} /> }} />
             <stack.Screen name="detail_notif" component={DetailNotification} options={{ title: "Notification", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} stack={true} /> }} />
         </stack.Navigator>
-
     )
 }
 

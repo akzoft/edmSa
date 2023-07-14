@@ -1,20 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, FlatList, ActivityIndicator, Animated } from 'react-native';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import { View, FlatList, ActivityIndicator, Animated, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState, colors, comparaison, css, reverseArray } from '../../libs';
-import { HistoryDevisCard, HistoryFactureCard, HistoryISAGOCard } from '../../components';
+import { CustomLoader, HistoryDevisCard, HistoryFactureCard, HistoryISAGOCard } from '../../components';
 import { useIsFocused } from '@react-navigation/native';
 
-export default function Historique() {
+const Historique = () => {
     const isFocused = useIsFocused();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const viewRef = useRef(null);
     const [historiqueDatas, setHistoriqueDatas] = useState<any>([]);
-    const { factures } = useSelector((state: RootState) => state?.facture)
-    const { isagos } = useSelector((state: RootState) => state?.isago)
-    const { devis } = useSelector((state: RootState) => state?.devis)
+    const { factures, facture_loading } = useSelector((state: RootState) => state?.facture)
+    const { isagos, isago_loading } = useSelector((state: RootState) => state?.isago)
+    const { devis, s_loading } = useSelector((state: RootState) => state?.devis)
     const [loadedItems, setLoadedItems] = useState(5);
     const [isLoading, setIsLoading] = useState(false);
+
+
+    //fade in animation
+    useEffect(() => {
+        if (isFocused) {
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [fadeAnim, isFocused, facture_loading, isago_loading, s_loading]);
+
 
 
     useEffect(() => {
@@ -35,28 +54,9 @@ export default function Historique() {
         }
     };
 
-    //fade in animation
-    useEffect(() => {
-        if (isFocused) {
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: 500,
-                useNativeDriver: true,
-            }).start();
-        }
-    }, [fadeAnim, isFocused]);
 
-
-    // if (loading)
-    //     return (<View style={{ flex: 1, alignContent: "center", justifyContent: "center" }}>
-    //         <ActivityIndicator size="large" color="gray" />
-    //     </View>)
+    if (facture_loading || isago_loading || s_loading)
+        return <CustomLoader />
 
     return (
         <Animated.View ref={viewRef} style={[{ opacity: fadeAnim, backgroundColor: colors.body, flex: 1 }]}>
@@ -87,3 +87,5 @@ export default function Historique() {
     );
 
 }
+
+export default Historique

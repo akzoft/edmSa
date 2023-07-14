@@ -16,6 +16,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import HistoriqueStack from './stacks/historique/HistoriqueStack'
 import { Header } from '../../components'
+import { Image } from 'react-native'
+import { images } from '../others/images'
 
 
 
@@ -24,7 +26,7 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
     const [notif, setNotif] = useState(false);
 
     useEffect(() => {
-        notifications?.some(notif => { (notif.readed === false) && setNotif(true) })
+        notifications?.some(notif => { (notif.readed === false) ? setNotif(true) : setNotif(false) })
     }, [notifications, screen]);
 
 
@@ -41,22 +43,25 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
                     }
                     const color = isFocused ? colors.main : colors.black
                     return (
-                        <TouchableOpacity key={index} onPress={onPress} testID={options.tabBarTestID} accessibilityRole='button'>
+                        <TouchableOpacity style={{ alignItems: 'baseline' }} activeOpacity={0.8} key={index} onPress={onPress} testID={options.tabBarTestID} accessibilityRole='button'>
 
                             {index === 0 && (
                                 <View style={styles.icon}>
-                                    {isFocused ? <MaterialIcons name="history" size={45} color={color} /> :
-                                        <MaterialIcons name="history" size={45} color={color} />
+                                    {isFocused ? <Image source={images.ico_historique_btab_blue} style={{ width: 35, height: 35, marginBottom: 4 }} /> :
+                                        <Image source={images.ico_historique_btab_dark} style={{ width: 35, height: 35, marginBottom: 4 }} />
                                     }
+                                    <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10 }}>Historiques</Text>
                                 </View>
 
                             )}
 
                             {index === 1 && (
                                 <View style={styles.icon}>
-                                    {isFocused ? <SimpleLineIcons name="earphones-alt" size={35} color={color} /> :
-                                        <SimpleLineIcons name="earphones-alt" size={35} color={color} />
+                                    {/* {isFocused ? <SimpleLineIcons name="earphones-alt" size={35} color={color} /> : */}
+                                    {isFocused ? <Image source={images.assistance_blue} style={{ width: 40, height: 40, }} /> :
+                                        <Image source={images.assistance} style={{ width: 40, height: 40, }} />
                                     }
+                                    <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10, marginBottom: 1 }}>Assistance</Text>
                                 </View>
 
                             )}
@@ -64,12 +69,15 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
 
 
                             {index === 2 && (
-                                <View style={styles.middleIcon}>
-                                    {isFocused ? <MaterialCommunityIcons name="home" size={40} color={colors.white} /> :
-                                        <MaterialCommunityIcons name="home" size={40} color={colors.white} />
-                                    }
-                                </View>
+                                <View style={{ alignItems: 'center' }}>
+                                    <View style={styles.middleIcon}>
+                                        {/* {isFocused ? <MaterialCommunityIcons name="home" size={40} color={colors.white} /> : */}
+                                        {isFocused ? <Image source={images.ico_home} style={{ width: 40, height: 40, }} /> :
+                                            <Image source={images.ico_home} style={{ width: 40, height: 40, }} />
+                                        }
 
+                                    </View>
+                                </View>
 
                             )}
 
@@ -84,6 +92,7 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
                                             {notif && <View style={{ position: "absolute", height: 10, width: 10, borderRadius: 50, backgroundColor: colors.danger, right: 6, top: 2 }} />}
                                         </View>
                                     }
+                                    <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10, marginBottom: 1 }}>Notifications</Text>
                                 </View>
                             )}
 
@@ -92,6 +101,7 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
                                     {isFocused ? <FontAwesome5 name="cog" size={35} color={color} /> :
                                         <FontAwesome5 name="cog" size={35} color={color} />
                                     }
+                                    <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10, marginTop: 3 }}>Paramètres</Text>
                                 </View>
 
                             )}
@@ -143,11 +153,11 @@ const MainNavigation: FC<any> = ({ route }) => {
 
     return (
         <tab.Navigator initialRouteName='acceuil' tabBar={(props) => (isTabBarVisible ? <CustomTabBar screen={screen} {...props} /> : null)} screenOptions={{ tabBarHideOnKeyboard: true, headerShown: false }}>
-            <tab.Screen name='historique_stk' component={HistoriqueStack} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Assistance" }} />
-            <tab.Screen name='assistance' component={Assistance} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Assistance" }} />
-            <tab.Screen name='acceuil' component={HomeStack} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Acceuil", tabBarHideOnKeyboard: true }} />
+            <tab.Screen name='historique_stk' component={HistoriqueStack} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Historiques" }} />
+            <tab.Screen name='assistance' component={Assistance} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Assistance", headerShown: true, header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} stack={true} /> }} />
+            <tab.Screen name='acceuil' component={HomeStack} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ title: "Accueil", tabBarHideOnKeyboard: true }} />
             <tab.Screen name='notification_stk' component={NotificationStack} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ headerShown: false }} />
-            <tab.Screen name='parametres' component={Parametre} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ headerShown: true, title: "Parametre", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} stack={true} /> }} />
+            <tab.Screen name='parametres' component={Parametre} listeners={({ navigation, route }) => ({ tabPress: () => navigation.navigate(route.name) })} options={{ headerShown: true, title: "Paramètres", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} stack={true} /> }} />
         </tab.Navigator>
     )
 }
@@ -156,9 +166,10 @@ export default MainNavigation
 
 const styles = StyleSheet.create({
     icon: {
-
+        alignItems: 'center'
     },
     middleIcon: {
-        bottom: 20, width: 50, height: 50, borderRadius: 30, backgroundColor: colors.red, justifyContent: "center", alignItems: "center", shadowColor: colors.red, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.6, elevation: 8
+        bottom: 20,
+        width: 50, height: 50, borderRadius: 30, backgroundColor: colors.red, justifyContent: "center", alignItems: "center", shadowColor: colors.red, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.6, elevation: 8
     }
 })

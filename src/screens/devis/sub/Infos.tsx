@@ -36,33 +36,15 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
     }, [files]);
 
 
-    // const checkFileExists = async (uri: string) => {
-
-    //     try {
-    //         // Vérifie si le fichier existe
-    //         const exists = await fs.exists(uri);
-    //         if (exists) {
-    //             console.log('Le fichier existe toujours à l\'emplacement spécifié');
-    //             // Faites ce que vous voulez ici
-    //         } else {
-    //             console.log('Le fichier n\'existe plus à l\'emplacement spécifié');
-    //             // Effectuez les actions appropriées
-    //         }
-    //     } catch (error) {
-    //         console.log('Une erreur s\'est produite lors de la vérification du fichier :', error);
-    //     }
-    // };
-
-
     //retrieve from local storage
-    useEffect(() => {
-        AsyncStorage.getItem("quit").then((data: any) => {
-            let _inputs: IDevisReq = JSON.parse(data)
-            if (_inputs !== null && _inputs !== undefined) {
-                setFiles({ proTitrePropriete: _inputs?.proTitrePropriete, quittusEdm: _inputs?.quittusEdm, proCopieIdentite: _inputs?.proCopieIdentite, proCopieVisa: _inputs?.proCopieVisa, locTitrePropriete: _inputs?.locTitrePropriete, autBranchement: _inputs?.autBranchement, locCopieIdentiteProprietaire: _inputs?.locCopieIdentiteProprietaire, locCopieIdentiteLocataire: _inputs?.locCopieIdentiteLocataire, locCopieVisa: _inputs?.locCopieVisa })
-            }
-        }).catch(err => console.log(err));
-    }, []);
+    // useEffect(() => {
+    //     AsyncStorage.getItem("quit").then((data: any) => {
+    //         let _inputs: IDevisReq = JSON.parse(data)
+    //         if (_inputs !== null && _inputs !== undefined) {
+    //             setFiles({ proTitrePropriete: _inputs?.proTitrePropriete, quittusEdm: _inputs?.quittusEdm, proCopieIdentite: _inputs?.proCopieIdentite, proCopieVisa: _inputs?.proCopieVisa, locTitrePropriete: _inputs?.locTitrePropriete, autBranchement: _inputs?.autBranchement, locCopieIdentiteProprietaire: _inputs?.locCopieIdentiteProprietaire, locCopieIdentiteLocataire: _inputs?.locCopieIdentiteLocataire, locCopieVisa: _inputs?.locCopieVisa })
+    //         }
+    //     }).catch(err => console.log(err));
+    // }, []);
 
 
     const on_cancel_store_data_to_asyncstore = async (data: IDevisReq) => {
@@ -72,7 +54,6 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
             console.error('Error writing to JSON file:', error);
         }
     };
-
 
 
 
@@ -133,16 +114,24 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
     const reset = () => {
         setFiles(init)
     }
+    var dot = 4;
 
     return (
         <View>
-            <View style={{ flexDirection: "row", marginVertical: 15 }}>
+            {/* <View style={{ flexDirection: "row", marginVertical: 15 }}>
                 {[1, 2, 3, 4, 5]?.map(dot => (
                     <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1, height: 1, backgroundColor: colors.dark }} />
                         <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: dot === 4 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
                         <View style={{ width: "15%", height: 1, backgroundColor: dot === 4 ? colors.primary : colors.dark }} />
                     </View>))}
+            </View> */}
+
+            <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot !== 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{5}</Text></View>
+                </View>
             </View>
 
 
@@ -156,25 +145,25 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
 
                 <View style={{ paddingHorizontal: 10 }}>
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("proTitrePropriete")}>
-                        <Text>Titre de propriété ou équivalent</Text>
+                        <Text style={styles.sec_label}>Titre de propriété ou équivalent</Text>
                         {files?.proTitrePropriete ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("quittusEdm")}>
-                        <Text>Quitus EDM / point de livraison</Text>
+                        <Text style={styles.sec_label}>Quitus EDM / point de livraison</Text>
                         {files?.quittusEdm ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("proCopieIdentite")}>
-                        <Text>Copie carte ID ou NINA ou PP</Text>
+                        <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP</Text>
                         {files?.proCopieIdentite ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("proCopieVisa")}>
-                        <Text>Copie VISA conformité ACAVIF</Text>
+                        <Text style={styles.sec_label}>Copie VISA conformité ACAVIF</Text>
                         {files?.proCopieVisa ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
@@ -183,31 +172,31 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
                 <Text style={{ color: colors.black, marginTop: 15 }}>4.2 Locataire (facultatif)</Text>
                 <View style={{ paddingHorizontal: 10 }}>
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("locTitrePropriete")}>
-                        <Text>Titre de propriété ou équivalent</Text>
+                        <Text style={styles.sec_label}>Titre de propriété ou équivalent</Text>
                         {files?.locTitrePropriete ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("autBranchement")}>
-                        <Text>Attestation Aut. branchement</Text>
+                        <Text style={styles.sec_label}>Attestation Aut. branchement</Text>
                         {files?.autBranchement ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieIdentiteProprietaire")}>
-                        <Text>Copie carte ID ou NINA ou PP / proprio</Text>
+                        <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP / proprio</Text>
                         {files?.locCopieIdentiteProprietaire ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieIdentiteLocataire")}>
-                        <Text>Copie carte ID ou NINA ou PP / local</Text>
+                        <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP / local</Text>
                         {files?.locCopieIdentiteLocataire ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieVisa")}>
-                        <Text>Copie VISA conformité ACAVIF</Text>
+                        <Text style={styles.sec_label}>Copie VISA conformité ACAVIF</Text>
                         {files?.locCopieVisa ? <FontAwesome name="check-circle" size={20} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={20} color={colors.main} />}
                     </TouchableOpacity>
@@ -219,14 +208,14 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
 
                         <View style={{ paddingHorizontal: 10, gap: 15, marginBottom: 15 }}>
                             <View>
-                                <Text>4.3.1 Le compteur est une propriété d'EDM et ne peut être déplacé sous aucun prétexte.</Text>
+                                <Text style={styles.sec_label}>4.3.1 Le compteur est une propriété d'EDM et ne peut être déplacé sous aucun prétexte.</Text>
                             </View>
 
                             <View style={{ gap: 3 }}>
-                                <Text>4.3.2 Aucun dévis n'est valable au delà des périodes suivant:</Text>
+                                <Text style={styles.sec_label}>4.3.2 Aucun devis n'est valable au delà des périodes suivantes:</Text>
                                 <View style={{ paddingHorizontal: 10, gap: 3 }}>
-                                    <Text>-Devis de branchement simple (6) mois</Text>
-                                    <Text>-Devis de branchement avec extension trois (3) mois.</Text>
+                                    <Text style={styles.sec_label}>-Devis de branchement simple (6) mois</Text>
+                                    <Text style={styles.sec_label}>-Devis de branchement avec extension trois (3) mois.</Text>
                                 </View>
                             </View>
 
@@ -240,7 +229,7 @@ const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveT
 
             <View style={{ flexDirection: "row", gap: 10 }}>
                 <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                    <Text style={styles.button_text}>Précedent</Text>
+                    <Text style={styles.button_text}>Précédent</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={handleNext} disabled={activeTab === tabs.length - 1} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
@@ -265,5 +254,6 @@ const styles = StyleSheet.create({
     label: { marginVertical: 4, paddingLeft: 10 },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
     button_text: { textAlign: "center", fontWeight: "bold", color: colors.white },
-    btn: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 2, padding: 15 }
+    btn: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 2, padding: 15 },
+    sec_label: { color: colors.dark }
 })

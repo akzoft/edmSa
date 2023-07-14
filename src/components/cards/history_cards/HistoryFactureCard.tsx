@@ -12,9 +12,9 @@ const HistoryFactureCard: FC<{ facture: IHistorique, }> = ({ facture }) => {
 
 
                 <View>
-                    <Text style={{ textDecorationLine: "underline" }}>FACTURE</Text>
-                    <Text style={{ fontSize: 19, color: colors.black }}>Facture N° {facture?.invoice}</Text>
-                    <Text style={{ fontSize: 15, color: colors.black }}>Compteur {facture?.compteur}</Text>
+                    <Text style={{ textDecorationLine: "underline", color: colors.black }}>FACTURE</Text>
+                    <Text style={{ fontSize: 19, color: colors.black }}>Facture n° {facture?.invoice}</Text>
+                    <Text style={{ fontSize: 15, color: colors.black }}>Compteur n° {facture?.compteur}</Text>
                     <Text style={{ fontSize: 13, color: colors.black }}>{facture?.owner}</Text>
                     <Text style={{ fontSize: 12, color: colors.black }}>{facture?.address}</Text>
                 </View>
@@ -38,15 +38,14 @@ const HistoryFactureCard: FC<{ facture: IHistorique, }> = ({ facture }) => {
             </View>
 
 
-
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
 
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                     <View style={{ height: 8, width: 8, backgroundColor: facture?.status === "PENDING" ? colors.warning : facture?.status === "PAID" ? colors.success : colors.danger, borderRadius: 50 }} />
-                    <Text>{(facture?.status === "PENDING") ? "En attente de paiement" : (facture?.status === "CANCELED") ? "Paiement annulé" : facture?.status === "PAID" && "Paiement reussie"}</Text>
+                    <Text style={{ color: colors.dark }}>{(facture?.status === "PENDING") ? "En attente de paiement" : (facture?.status === "CANCELED") ? "Paiement annulé" : facture?.status === "PAID" && "Paiement réussi"}</Text>
                 </View>
 
-                <Text style={{ fontSize: 12, fontStyle: "italic" }}>{moment(facture?.updatedAt).fromNow()}</Text>
+                <Text style={{ fontSize: 12, fontStyle: "italic", color: colors.dark }}>{moment(facture?.updatedAt).fromNow()}</Text>
             </View>
 
             {/* <TouchableOpacity onPress={() => navigation.navigate("paiement_facture", { facture })} activeOpacity={0.7} style={{ padding: 15, backgroundColor: colors.red, borderRadius: 5 }}><Text style={{ color: colors.white, textAlign: "center" }}>Payer maintenant</Text></TouchableOpacity> */}
@@ -57,7 +56,7 @@ const HistoryFactureCard: FC<{ facture: IHistorique, }> = ({ facture }) => {
 export default HistoryFactureCard
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: colors.white, borderWidth: 0.5, borderColor: colors.dark, borderRadius: 15, padding: 10, gap: 5 },
+    container: { backgroundColor: colors.white, borderRadius: 5, padding: 10, gap: 5 },
 })
 
 

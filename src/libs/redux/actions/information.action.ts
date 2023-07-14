@@ -3,7 +3,7 @@ import { api } from "../api"
 
 export const getAllInformations = (token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "inf_loading" })
+        dispatch({ type: "info_loading" })
         const ans = await axios.get(`${api}/informations`, { headers: { Authorization: `Bearer ${token}` } })
         dispatch({ type: "get_all_infos_reussie", payload: ans.data })
     } catch (error: any) {
@@ -14,7 +14,7 @@ export const getAllInformations = (token: string) => async (dispatch: any) => {
 
 export const getOneInformation = (id: string, token: string) => async (dispatch: any) => {
     try {
-        dispatch({ type: "inf_loading" })
+        dispatch({ type: "info_loading" })
         const ans = await axios.get(`${api}/informations/${id}`, { headers: { Authorization: `Bearer ${token}` } })
         dispatch({ type: "get_info_reussie", payload: ans.data })
     } catch (error: any) {

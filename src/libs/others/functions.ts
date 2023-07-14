@@ -32,7 +32,7 @@ export const removePhoneIndicatif = (numero: string) => {
         return numero
     }
 }
-export const formatNumberWithSpaces = (data: string) => data?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+export const formatNumberWithSpaces = (data: any) => data?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
 
 export function convertDateToMillis(date: string | number | Date) {
     return new Date(date).getTime()
@@ -115,3 +115,4 @@ export const notificationListener = () => {
 
     messaging().onMessage(async remoteMessage => { })
 }
+

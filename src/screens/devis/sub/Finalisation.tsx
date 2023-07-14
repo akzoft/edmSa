@@ -1,6 +1,6 @@
 
 import { FC, useEffect, useRef, useState } from "react";
-import { Button, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Button, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { IDevisReq, IVille, RootState, colors, getVilles, handleChangeMobile } from "../../../libs";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import { Picker } from "@react-native-picker/picker";
@@ -11,8 +11,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, setActiveTab: any, handleSendDevis: any, inputs: IDevisReq, setInputs: any, typeVille: any, setTypeVille: any, typeCommune: any, setTypeCommune: any, typeQuartier: any, setTypeQuartier: any }
 const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, handleSendDevis, inputs, setInputs, typeVille, setTypeVille, typeCommune, setTypeCommune, typeQuartier, setTypeQuartier }) => {
     const pickerRef = useRef<any>();
-    const { auth } = useSelector((state: RootState) => state?.user)
-    const { villes } = useSelector((state: RootState) => state?.ville)
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const { villes, ville_loading } = useSelector((state: RootState) => state?.ville)
+    const { s_loading } = useSelector((state: RootState) => state?.devis)
     const [cities, setCities] = useState<IVille[]>();
     const dispatch = useDispatch<any>()
 
@@ -56,9 +57,6 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
 
 
 
-
-
-
     const handlePrevious = () => {
         setActiveTab((prevTab: number) => (prevTab > 0 ? prevTab - 1 : prevTab));
         scrollViewRef.current.scrollTo({ y: 0, animated: true })
@@ -89,16 +87,24 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
         }
     };
 
+    var dot = 5;
 
     return (
         <View>
-            <View style={{ flexDirection: "row", marginVertical: 15, width: "100%" }}>
+            {/* <View style={{ flexDirection: "row", marginVertical: 15, width: "100%" }}>
                 {[1, 2, 3, 4, 5]?.map(dot => (
                     <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1, height: 1, backgroundColor: colors.dark }} />
                         <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
                         <View style={{ width: "15%", height: 1, backgroundColor: dot === 5 ? colors.primary : colors.dark }} />
                     </View>))}
+            </View> */}
+
+            <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: colors.dark }}><Text style={{ color: colors.white }}>{5}</Text></View>
+                </View>
             </View>
 
             <View>
@@ -110,55 +116,55 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
                         <Picker
                             ref={pickerRef}
                             selectedValue={typeVille}
-                            onValueChange={(val) => setTypeVille(val)}>
-                            <Picker.Item label="Votre ville" value="" style={{ color: "gray" }} />
+                            onValueChange={(val) => setTypeVille(val)} style={{ color: colors.dark }}>
+                            <Picker.Item label="---Votre ville---" value="" style={{ color: "rgba(0,0,0,0.2)" }} />
                             {cities?.map((ville: IVille) => (<Picker.Item key={ville?.id} label={ville?.name} value={ville?.id} />))}
                         </Picker>
                     </View>
                 </View>
 
 
-                <View style={{ flexDirection: "row", gap: 5 }}>
+                <View style={{ display: 'flex', flexDirection: "row", gap: 15, alignItems: 'baseline' }}>
 
-                    <View style={{ marginTop: 15, flex: 4 }}>
+                    <View style={{ marginTop: 15, flex: 6 }}>
                         <Text style={styles.label}>Commune <Text style={styles.required}>*</Text></Text>
-                        <TextInput placeholder='Commune' style={styles.input} value={inputs?.commune ? inputs.commune?.toString() : ""} onChangeText={text => handleChangeMobile("commune", text, setInputs)} />
+                        <TextInput placeholder='Commune' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.commune ? inputs.commune?.toString() : ""} onChangeText={text => handleChangeMobile("commune", text, setInputs)} />
                     </View>
 
-                    <View style={{ marginVertical: 15, flex: 4 }}>
+                    <View style={{ marginVertical: 15, flex: 6 }}>
                         <Text style={styles.label}>Quartier <Text style={styles.required}>*</Text></Text>
-                        <TextInput placeholder='Quartier' style={styles.input} value={inputs?.quartier ? inputs.quartier?.toString() : ""} onChangeText={text => handleChangeMobile("quartier", text, setInputs)} />
+                        <TextInput placeholder='Quartier' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.quartier ? inputs.quartier?.toString() : ""} onChangeText={text => handleChangeMobile("quartier", text, setInputs)} />
                     </View>
                 </View>
 
-                <View style={[styles.form_item, { marginBottom: 15 }]}>
+                <View style={[styles.form_item, { marginBottom: 15, gap: 15, }]}>
                     <View style={{ flex: 1 }}>
-                        <Text>Rue</Text>
-                        <TextInput placeholder='Rue' style={styles.input} value={inputs?.rue ? inputs.rue?.toString() : ""} onChangeText={text => handleChangeMobile("rue", text, setInputs)} />
+                        <Text style={styles.label} >Rue</Text>
+                        <TextInput placeholder='Rue' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.rue ? inputs.rue?.toString() : ""} onChangeText={text => handleChangeMobile("rue", text, setInputs)} />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <Text>Porte</Text>
-                        <TextInput placeholder='Porte' keyboardType="number-pad" style={styles.input} value={inputs?.porte ? inputs.porte?.toString() : ""} onChangeText={text => handleChangeMobile("porte", text, setInputs)} />
+                        <Text style={styles.label}>Porte</Text>
+                        <TextInput placeholder='Porte' placeholderTextColor={'rgba(0,0,0,0.5)'} keyboardType="number-pad" style={styles.input} value={inputs?.porte ? inputs.porte?.toString() : ""} onChangeText={text => handleChangeMobile("porte", text, setInputs)} />
                     </View>
                 </View>
 
-                <View style={[styles.form_item, { marginBottom: 15 }]}>
+                <View style={[styles.form_item, { marginBottom: 15, gap: 15, }]}>
                     <View style={{ flex: 1 }}>
-                        <Text>Lot</Text>
-                        <TextInput placeholder='Lot' style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} />
+                        <Text style={styles.label}>Lot</Text>
+                        <TextInput placeholder='Lot' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <Text>Proche de</Text>
-                        <TextInput placeholder='Proche de' style={styles.input} value={inputs?.procheDe ? inputs.procheDe?.toString() : ""} onChangeText={text => handleChangeMobile("procheDe", text, setInputs)} />
+                        <Text style={styles.label}>Proche de</Text>
+                        <TextInput placeholder='Proche de' placeholderTextColor={'rgba(0,0,0,0.5)'} style={styles.input} value={inputs?.procheDe ? inputs.procheDe?.toString() : ""} onChangeText={text => handleChangeMobile("procheDe", text, setInputs)} />
                     </View>
                 </View>
 
 
                 <View style={[styles.form_item, { alignItems: "center", justifyContent: "center" }]}>
                     <View style={{ flex: 10 }}>
-                        <Text>Localisation (latitude,longitude)</Text>
+                        <Text style={styles.label}>Localisation (latitude,longitude)</Text>
                         <View style={[styles.input, { height: 48, justifyContent: "center" }]}>
-                            <Text >{inputs?.localisation ? inputs?.localisation : "latitude,longitude"}</Text>
+                            <Text style={{ color: colors.dark }}>{inputs?.localisation ? inputs?.localisation : "latitude,longitude"}</Text>
                         </View>
 
                         {/* <TextInput placeholder='Lattitude,Longitude' style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} /> */}
@@ -171,13 +177,15 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
 
             </View>
 
-            <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
-                <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 3 }]} >
-                    <Text style={styles.button_text}>Précedent</Text>
+            <View style={{ flexDirection: "row", gap: 5, marginTop: 20 }}>
+                <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 4 }]} >
+                    <Text style={styles.button_text}>Précédent</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handleSendDevis} activeOpacity={0.7} style={[styles.button, { flex: 9 }]} >
-                    <Text style={styles.button_text}>Valider et envoyer la demande</Text>
+                <TouchableOpacity disabled={s_loading ? true : false} onPress={handleSendDevis} activeOpacity={0.7} style={[styles.button, { flex: 8 }]} >
+                    {!s_loading ? <Text style={styles.button_text}>Valider et envoyer la demande</Text> :
+                        <ActivityIndicator size={"small"} color={colors.white} />
+                    }
                 </TouchableOpacity>
             </View>
         </View>
@@ -189,10 +197,11 @@ export default Finalisation
 
 const styles = StyleSheet.create({
     title: { fontSize: 18, color: colors.black },
-    label: { marginVertical: 4, paddingLeft: 10 },
+    label: { marginVertical: 4, paddingLeft: 10, color: colors.dark },
     form_item: { flexDirection: "row", gap: 5, marginVertical: 5 },
     input: { borderWidth: 0.5, borderColor: colors.dark, borderRadius: 5, paddingLeft: 15, color: colors.main },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
     button_text: { textAlign: "center", fontWeight: "bold", color: colors.white },
     required: { color: colors.warning },
+    sec_label: { color: colors.dark }
 })

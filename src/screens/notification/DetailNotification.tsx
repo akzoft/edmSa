@@ -1,15 +1,16 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
 import { RootState, colors, deleteOneNotification } from '../../libs'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import 'moment/locale/fr';
+import { CustomLoader } from '../../components'
 
 const DetailNotification: FC<any> = ({ route, navigation }) => {
     const routes = route?.params
     const dispatch = useDispatch<any>();
     const [notif, setNotif] = useState<any>()
-    const { auth } = useSelector((state: RootState) => state?.user)
+    const { auth, user_loading } = useSelector((state: RootState) => state?.user)
 
     useEffect(() => {
         if (routes?.notif) { setNotif(routes?.notif) }
@@ -22,11 +23,14 @@ const DetailNotification: FC<any> = ({ route, navigation }) => {
         }
     }
 
+    if (user_loading)
+        return <CustomLoader />
+
     return (
         <View style={{ flex: 1, }}>
             <View style={{ padding: 20, gap: 20 }}>
-                <Text style={{ fontSize: 22 }}>{notif?.title}</Text>
-                <Text style={{ textAlign: "justify" }}>{notif?.message}</Text>
+                <Text style={{ fontSize: 22, color: colors.dark }}>{notif?.title}</Text>
+                <Text style={{ textAlign: "justify", color: colors.dark }}>{notif?.message}</Text>
                 <Text style={{ alignSelf: "flex-end", fontStyle: "italic", fontSize: 12, color: "brown" }}>{moment(notif?.updatedAt).fromNow()}</Text>
             </View>
 

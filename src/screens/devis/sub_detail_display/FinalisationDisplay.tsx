@@ -8,6 +8,7 @@ type props = { scrollViewRef: any, activeTab: any, setActiveTab: any, inputs: ID
 const FinalisationDisplay: FC<props> = ({ scrollViewRef, activeTab, setActiveTab, inputs }) => {
     const route = useRoute<any>()
     const routes = route?.params;
+    var dot = 5;
     const [devis, setDevis] = useState<IDevisReq>();
 
     useEffect(() => {
@@ -21,15 +22,12 @@ const FinalisationDisplay: FC<props> = ({ scrollViewRef, activeTab, setActiveTab
 
     return (
         <View>
-            <View style={{ flexDirection: "row", marginVertical: 15, width: "100%" }}>
-                {[1, 2, 3, 4, 5]?.map(dot => (
-                    <View key={dot} style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ flex: 1, height: 1, backgroundColor: colors.dark }} />
-                        <View style={{ borderRadius: 20, width: 20, height: 20, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
-                        <View style={{ width: "15%", height: 1, backgroundColor: dot === 5 ? colors.primary : colors.dark }} />
-                    </View>))}
+            <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: dot === 5 ? colors.primary : colors.dark }}><Text style={{ color: colors.white }}>{dot}</Text></View>
+                    <Text style={{ marginHorizontal: 8, color: colors.dark }}> sur </Text><View style={{ borderRadius: 40, width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: colors.dark }}><Text style={{ color: colors.white }}>{5}</Text></View>
+                </View>
             </View>
-
             <View>
                 <Text style={[styles.title, { marginVertical: 10 }]}>5. Adresse principale</Text>
                 <View style={{ marginTop: 15, flex: 4 }}>
@@ -46,7 +44,7 @@ const FinalisationDisplay: FC<props> = ({ scrollViewRef, activeTab, setActiveTab
 
             <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
                 <TouchableOpacity onPress={handlePrevious} disabled={activeTab === 0} activeOpacity={0.7} style={[styles.button, { flex: 1 }]} >
-                    <Text style={styles.button_text}>Précedent</Text>
+                    <Text style={styles.button_text}>Précédent</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -58,7 +56,7 @@ export default FinalisationDisplay
 
 const styles = StyleSheet.create({
     title: { fontSize: 18, color: colors.black },
-    label: { marginVertical: 4, paddingLeft: 10 },
+    label: { marginVertical: 4, paddingLeft: 10, color: colors.dark },
     form_item: { flexDirection: "row", gap: 5, marginVertical: 5 },
     input: { borderWidth: 0.5, borderColor: colors.dark, borderRadius: 5, paddingLeft: 15, color: colors.main },
     button: { borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" },
