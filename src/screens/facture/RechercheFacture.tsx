@@ -1,30 +1,49 @@
 import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useState } from 'react'
-import { RootState, colors, getAllFacture, images, searchFacture } from '../../libs'
+import { RootState, colors, css, getAllFacture, images, searchFacture } from '../../libs'
 import { useDispatch, useSelector } from 'react-redux'
 import { ICompteur, IFactureSearchReq } from '../../libs/others/models'
 import { useNavigation } from '@react-navigation/native'
 import { CustomLoader } from '../../components'
+import Toast from 'react-native-toast-message'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const RechercheFacture: FC<any> = ({ navigation }) => {
     const dispatch = useDispatch<any>()
     const [searchText, setSearchText] = useState<string>();
+    const [error, setError] = useState('');
     const { auth, user_loading } = useSelector((state: RootState) => state?.user)
-    const { facture, tmp, facture_loading } = useSelector((state: RootState) => state?.facture)
+    const { factures, tmp, facture_loading, errors } = useSelector((state: RootState) => state?.facture)
     const { classics_cpt, c_loading } = useSelector((state: RootState) => state?.compteur)
     const [click, setClick] = useState(false);
 
 
+    //display errors if exist
+    useEffect(() => {
+        if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Informations', text2: error ? error : errors ? errors : '', }); setError(""); dispatch({ type: "reset_errors" }) }
+    }, [error, errors])
+
     useEffect(() => {
         if (tmp) {
-            navigation.navigate("paiement_facture", { facture })
+            navigation.navigate("paiement_facture", { factures })
             dispatch({ type: "reset_tmp" })
             setClick(false)
         }
     }, [tmp]);
 
+    useEffect(() => {
+        AsyncStorage.removeItem('notif').then((ans: any) => { console.log('') }).catch(err => console.log(err))
+        dispatch({ type: 'receive_notif', payload: 'pending' })
+    }, [dispatch]);
+
+
+
 
     const handleSearch = () => {
+        if (!searchText || searchText === '') {
+            setError('Référence client requise.'); return;
+        } else { setError(''); }
+
         const data: IFactureSearchReq = {
             ref: searchText,
             customerId: auth?.id,
@@ -39,6 +58,7 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <View style={css.auth.toast}><Toast /></View>
             <View style={styles.content}>
 
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
@@ -49,9 +69,9 @@ const RechercheFacture: FC<any> = ({ navigation }) => {
                                 data={classics_cpt}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
-                                renderItem={({ item }) => {
+                                renderItem={({ item, index }) => {
                                     return <View>
-                                        <CompteurSmallCard key={item.id.toString()} compteur={item} />
+                                        <CompteurSmallCard key={index} compteur={item} />
                                     </View>
                                 }}
                                 keyExtractor={(item) => item.id.toString()}

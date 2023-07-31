@@ -1,7 +1,7 @@
 import { ILoginRes, IRegisterRes, IStore } from "../../others/models"
 
 
-const initial: IStore = { user_loading: false, errors: null, user: null, auth: null, temp: false, temps: false, code: { id: "", pin: 0 }, username: null }
+const initial: IStore = { edm_news: '', edm_actus: '', user_loading: false, errors: null, user: null, auth: null, temp: false, temps: false, code: { id: "", pin: 0 }, username: null }
 interface IAction { type: string; payload: string | boolean | IRegisterRes | ILoginRes | any }
 
 const userReducer = (state = initial, action: IAction): IStore => {
@@ -25,12 +25,17 @@ const userReducer = (state = initial, action: IAction): IStore => {
         case "reset_reussie":
         case "verify_reussie": return { ...state, temp: action.payload, errors: null, user_loading: false }
 
+        case "edm_news": return { ...state, edm_news: action.payload, errors: null, user_loading: false }
+        case "edm_actus": return { ...state, edm_actus: action.payload, errors: null, user_loading: false }
+
         case "deconnexion_reussie": return initial
 
         case "reset_temp": return { ...state, temp: false }
         case "reset_temps": return { ...state, temps: false }
         case "reset_errors": return { ...state, errors: null }
         case "reset_username": return { ...state, username: null }
+        case "reset_edm_news": return { ...state, edm_news: '' }
+        case "reset_edm_actus": return { ...state, edm_actus: '' }
 
 
 

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { LogBox, PermissionsAndroid, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PermissionsAndroid, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IDevisReq, colors, devis_validation3, file_size_validation } from "../../../libs";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DocumentPicker from 'react-native-document-picker'
@@ -7,7 +7,6 @@ import ImageCropPicker from 'react-native-image-crop-picker'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dialog from "react-native-dialog";
 import { request, PERMISSIONS } from 'react-native-permissions';
-import { Image } from 'react-native-compressor';
 
 
 
@@ -16,12 +15,7 @@ type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, set
 const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, setVal, files, setFiles, inputs, setInputs }) => {
     const init: TFiles = { proTitrePropriete: null, quittusEdm: null, proCopieIdentite: null, proCopieVisa: null, locTitrePropriete: null, autBranchement: null, locCopieIdentiteProprietaire: null, locCopieIdentiteLocataire: null, locCopieVisa: null };
     const [visible, setVisible] = useState(false);
-    const [fieldName, setFieldName] = useState('');
-    var dot = 4;
-
-    LogBox.ignoreAllLogs();
-
-
+    const [selecetedImg, setSelecetedImg] = useState('');
 
     //add to local storage
     useEffect(() => {
@@ -102,8 +96,9 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
         scrollViewRef.current.scrollTo({ y: 0, animated: true })
     };
 
+
     // gestion upload image
-    const pickImage = async () => {
+    const pickImage = async (fieldName: string) => {
         try {
             const _files: any = await DocumentPicker.pick({
                 type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
@@ -124,51 +119,45 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
 
     //select image
-    const selectImage = () => {
+    const selectImage = (fieldName: string) => {
+        console.log(fieldName)
         PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((granted) => {
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    ImageCropPicker.openPicker({ cropping: true, cropperCircleOverlay: false, mediaType: 'photo', includeBase64: false, })
+                    ImageCropPicker.openPicker({ cropping: true, cropperCircleOverlay: false, mediaType: 'photo', includeBase64: true, })
                         .then((response: any) => {
                             if (!response.cancelled) {
                                 //  setFile({ uri: response.path, type: 'image/jpeg', name: 'image.jpg', })
 
-                                Image.compress(response?.path, { compressionMethod: 'auto', quality: 0.2 })
-                                    .then(image => {
-                                        const imgs = image?.split('/')
-                                        const filename = imgs[imgs?.length - 1].split('.')[0]
+                                setFiles((prevFiles: TFiles) => ({
+                                    ...prevFiles,
+                                    [fieldName]: { uri: response.path, type: 'image/jpeg', name: 'image.jpg', },
+                                }));
 
-                                        setFiles((prevFiles: TFiles) => ({
-                                            ...prevFiles,
-                                            [fieldName]: { uri: image, type: 'image/jpeg', name: filename + '-image.jpg' },
-                                        }));
-                                    }).catch(err => { console.log(err) });
                             }
                         })
                         .catch((error) => { setError(error) });
                 }
-            }).catch(err => { console.log(err) })
+            })
 
         setVisible(false)
     };
 
-    const takePhoto = async () => {
+
+    const takePhoto = async (fieldName: string) => {
 
         try {
             const permission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
             const granted = await request(permission);
             if (granted === 'granted') {
-                const image = await ImageCropPicker.openCamera({ width: 300, height: 400, cropping: true, includeBase64: false })
-
-                const img = await Image.compress(image?.path, { compressionMethod: 'auto', quality: 0.2 })
-                const imgs = image?.path?.split('/')
-                const filename = imgs[imgs?.length - 1].split('.')[0]
-
-                setFiles((prevFiles: TFiles) => ({
-                    ...prevFiles,
-                    [fieldName]: { uri: img, type: 'image/jpeg', name: filename + '-image.jpg' },
-                }));
-
+                ImageCropPicker.openCamera({ width: 300, height: 400, cropping: true, })
+                    .then(image => {
+                        setFiles((prevFiles: TFiles) => ({
+                            ...prevFiles,
+                            [fieldName]: { uri: image.path, type: 'image/jpeg', name: 'image.jpg', },
+                        }));
+                    })
+                    .catch(error => { console.log(error); });
             } else {
                 console.log('Permission refusée pour accéder à la caméra');
             }
@@ -179,17 +168,20 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
 
 
+        console.log(files)
 
     };
 
     const openToggle = (fieldName: string) => {
         setVisible(!visible)
-        setFieldName(fieldName)
+        setSelecetedImg(fieldName)
     }
+
 
     const reset = () => {
         setFiles(init)
     }
+    var dot = 4;
 
     return (
         <View>
@@ -206,12 +198,12 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
                 <Dialog.Title>Choisissez une option</Dialog.Title>
                 <Dialog.Description>
                     {'\n'}
-                    <Dialog.Button onPress={() => takePhoto()} label="Prendre une photo" style={{ textAlign: 'center', color: colors.info }} />
+                    <Dialog.Button onPress={() => takePhoto(selecetedImg)} label="Prendre une photo" style={{ textAlign: 'center', color: colors.info }} />
                     {'\n'}
                     {'\n'}
-                    <Dialog.Button onPress={() => selectImage()} label="Choisissez une image" style={{ textAlign: 'center', color: colors.info }} />
+                    <Dialog.Button onPress={() => selectImage(selecetedImg)} label="Choisissez une image" style={{ textAlign: 'center', color: colors.info }} />
                 </Dialog.Description>
-                <Dialog.Button onPress={() => setVisible(false)} label="Annuler" style={{ color: colors.danger }} />
+
             </Dialog.Container>
 
             <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
@@ -226,8 +218,6 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
                 <Text style={[styles.title, { marginVertical: 10 }]}>4. Dossier à fournir</Text>
                 <TouchableOpacity onPress={reset}><Text style={{ fontWeight: "bold", fontSize: 10, textDecorationLine: "underline", color: colors.main }}>Effacer tout</Text></TouchableOpacity>
             </View>
-
-            {/* <View><Image source={files.proTitrePropriete} style={{ width: 80, height: 80 }} /></View> */}
 
 
             <View style={{ paddingHorizontal: 10 }}>

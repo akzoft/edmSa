@@ -65,6 +65,7 @@ const Notification: FC<any> = ({ navigation }) => {
         if (auth && notif) {
             dispatch(deleteOneNotification(notif?.id, auth?.accessToken))
             toggleOverlay()
+            dispatch(getAllNotifications(auth?.id, auth?.accessToken));
         }
     }
 
@@ -94,7 +95,7 @@ const Notification: FC<any> = ({ navigation }) => {
             <View style={[styles.content, { flexGrow: 1, paddingTop: 15 }]}>
                 {/* {notifications?.map(notif => (<NotificationCard key={notif?.id} notif={notif} handleLongPress={toggleOverlay} setNotif={setNotif} />))} */}
 
-                <FlatList
+                {notifications?.length > 0 ? <FlatList
                     data={notifications?.slice(0, loadedItems)}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => <NotificationCard key={notif?.id} notif={item} handleLongPress={toggleOverlay} setNotif={setNotif} />}
@@ -102,7 +103,11 @@ const Notification: FC<any> = ({ navigation }) => {
                     contentContainerStyle={{ padding: 10, gap: 10 }}
                     onEndReached={handleEndReached}
                     onEndReachedThreshold={0.8} // Appeler onEndReached lorsque vous êtes à 50% de la fin de la liste
-                />
+                /> :
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ color: colors.main }}>Aucune notification</Text>
+                    </View>
+                }
                 {isLoading && <ActivityIndicator size="large" color="gray" style={{ marginBottom: 20 }} />}
 
             </View>

@@ -25,7 +25,7 @@ const Isago: FC<{ route: any }> = ({ route }) => {
 
     return (
         <stack.Navigator >
-            <stack.Screen name="recherche_isago" component={RechercheCompteurISAGO} options={{ title: "Compteur ISAGO", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
+            <stack.Screen name="recherche_isago" component={RechercheCompteurISAGO} options={{ title: "ISAGO", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
             <stack.Screen name="resultat_isago" component={PaiementISAGO} options={{ title: "Crédit ISAGO", header: ({ options, route, navigation }) => <Header title={options.title} route={route} navigation={navigation} canGoBack={true} stack={true} /> }} />
         </stack.Navigator>
 

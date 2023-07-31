@@ -21,6 +21,8 @@ export const images = {
     ico_compteur: require("./assets/ico_compteur.png"),
     ico_info: require("./assets/ico_info.png"),
     ico_home: require("./assets/home.png"),
+    correct: require("./assets/correct.png"),
+    echec: require("./assets/echoue.png"),
     ico_historique_btab_blue: require("./assets/ico_historique_btab_blue.png"),
     ico_historique_btab_dark: require("./assets/ico_historique_btab_dark.png"),
 }

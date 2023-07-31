@@ -12,6 +12,7 @@ type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, set
 const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, handleSendDevis, inputs, setInputs, typeVille, setTypeVille, typeCommune, setTypeCommune, typeQuartier, setTypeQuartier }) => {
     const pickerRef = useRef<any>();
     const { auth, user_loading } = useSelector((state: RootState) => state?.user)
+    const [locationLoading, setLocationLoading] = useState<boolean>(false);
     const { villes, ville_loading } = useSelector((state: RootState) => state?.ville)
     const { s_loading } = useSelector((state: RootState) => state?.devis)
     const [cities, setCities] = useState<IVille[]>();
@@ -42,6 +43,7 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
             let _inputs: IDevisReq = JSON.parse(data)
             if (_inputs?.typeCompteur !== "") {
                 inputs.ville = typeVille
+                inputs.villeId = typeVille
                 on_cancel_store_data_to_asyncstore(inputs)
             }
         })
@@ -65,6 +67,7 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
 
     const handleSetLocation = async () => {
         try {
+            setLocationLoading(true);
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
@@ -78,12 +81,15 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 // L'autorisation a été accordée, vous pouvez maintenant utiliser la géolocalisation
                 Geolocation.getCurrentPosition(info => setInputs((old: IDevisReq) => { return { ...old, localisation: info.coords.latitude + "," + info.coords.longitude } }));
+                setLocationLoading(false);
             } else {
                 // L'autorisation a été refusée
                 Geolocation.getCurrentPosition(info => setInputs((old: IDevisReq) => { return { ...old, localisation: "" } }));
+                setLocationLoading(false);
             }
         } catch (err) {
             console.warn(err);
+            setLocationLoading(false);
         }
     };
 
@@ -169,9 +175,16 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
 
                         {/* <TextInput placeholder='Lattitude,Longitude' style={styles.input} value={inputs?.lot ? inputs.lot?.toString() : ""} onChangeText={text => handleChangeMobile("lot", text, setInputs)} /> */}
                     </View>
-
+                    {/* 
                     <TouchableOpacity onPress={handleSetLocation} activeOpacity={0.7} style={{ backgroundColor: colors.main, alignItems: "center", justifyContent: "center", height: 48, width: 48, marginTop: 20, borderRadius: 5 }}>
                         <MaterialIcons name="my-location" size={28} color={colors.white} />
+                    </TouchableOpacity> */}
+
+                    <TouchableOpacity onPress={handleSetLocation} activeOpacity={0.7} style={{ backgroundColor: colors.main, alignItems: "center", justifyContent: "center", height: 48, width: 48, marginTop: 28, borderRadius: 5 }}>
+                        {locationLoading ?
+                            <ActivityIndicator size="small" color={colors.white} /> :
+                            <MaterialIcons name="my-location" size={28} color={colors.white} />
+                        }
                     </TouchableOpacity>
                 </View>
 
@@ -182,8 +195,8 @@ const Finalisation: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, set
                     <Text style={styles.button_text}>Précédent</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity disabled={s_loading ? true : false} onPress={handleSendDevis} activeOpacity={0.7} style={[styles.button, { flex: 8 }]} >
-                    {!s_loading ? <Text style={styles.button_text}>Valider et envoyer la demande</Text> :
+                <TouchableOpacity disabled={(s_loading && locationLoading) ? true : false} onPress={handleSendDevis} activeOpacity={0.7} style={[styles.button, { flex: 8 }]} >
+                    {(!s_loading) ? <Text style={styles.button_text}>Valider et envoyer la demande</Text> :
                         <ActivityIndicator size={"small"} color={colors.white} />
                     }
                 </TouchableOpacity>

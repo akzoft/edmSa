@@ -4,6 +4,7 @@ import { ICompteur, IISAGOsearch, RootState, colors, images, searchISAGO } from 
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { CustomLoader } from '../../components'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
     const dispatch = useDispatch<any>()
@@ -20,6 +21,11 @@ const RechercheCompteurISAGO: FC<any> = ({ navigation }) => {
             setClick(false)
         }
     }, [tmp]);
+
+    useEffect(() => {
+        AsyncStorage.removeItem('notif').then((ans: any) => { console.log('remove au niv search fact ======= ', ans) }).catch(err => console.log(err))
+        dispatch({ type: 'receive_notif', payload: 'pending' })
+    }, [dispatch]);
 
 
     const handleSearch = () => {

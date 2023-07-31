@@ -1,11 +1,9 @@
-import { ActivityIndicator, Keyboard, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Keyboard, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { FC, useEffect, useLayoutEffect, useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native'
 import Ionicons from "react-native-vector-icons/Ionicons"
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
-import { Assistance, Historique, Notification, Parametre } from '../../screens'
+import { Assistance, Parametre } from '../../screens'
 import { useDispatch, useSelector } from 'react-redux'
 import { colors } from '../others/typography'
 import { checking } from '../redux/actions/user.action'
@@ -13,17 +11,25 @@ import HomeStack from './stacks/HomeStack'
 import NotificationStack from './stacks/NotificationStack'
 import { RootState } from '../redux/Store'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import HistoriqueStack from './stacks/historique/HistoriqueStack'
 import { Header } from '../../components'
 import { Image } from 'react-native'
 import { images } from '../others/images'
+import { getAllNotifications } from '../redux/actions/notification.action'
 
 
 
 const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
+    const dispatch = useDispatch<any>()
     const { notifications } = useSelector((state: RootState) => state?.notif)
+    const { auth } = useSelector((state: RootState) => state?.user)
     const [notif, setNotif] = useState(false);
+
+    useEffect(() => {
+        if (auth)
+            dispatch(getAllNotifications(auth?.id, auth?.accessToken));
+    }, [auth]);
+
 
     useEffect(() => {
         notifications?.some(notif => { (notif.readed === false) ? setNotif(true) : setNotif(false) })
@@ -47,8 +53,8 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
 
                             {index === 0 && (
                                 <View style={styles.icon}>
-                                    {isFocused ? <Image source={images.ico_historique_btab_blue} style={{ width: 35, height: 35, marginBottom: 4 }} /> :
-                                        <Image source={images.ico_historique_btab_dark} style={{ width: 35, height: 35, marginBottom: 4 }} />
+                                    {isFocused ? <Image source={images.ico_historique_btab_blue} style={{ width: 35, height: 35, marginBottom: 4, tintColor: colors.main }} /> :
+                                        <Image source={images.ico_historique_btab_dark} style={{ width: 35, height: 35, marginBottom: 4, tintColor: colors.black }} />
                                     }
                                     <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10 }}>Historiques</Text>
                                 </View>
@@ -58,8 +64,8 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
                             {index === 1 && (
                                 <View style={styles.icon}>
                                     {/* {isFocused ? <SimpleLineIcons name="earphones-alt" size={35} color={color} /> : */}
-                                    {isFocused ? <Image source={images.assistance_blue} style={{ width: 40, height: 40, }} /> :
-                                        <Image source={images.assistance} style={{ width: 40, height: 40, }} />
+                                    {isFocused ? <Image source={images.assistance_blue} style={{ width: 40, height: 40, tintColor: colors.main }} /> :
+                                        <Image source={images.assistance} style={{ width: 40, height: 40, tintColor: colors.black }} />
                                     }
                                     <Text style={{ color: isFocused ? colors.main : colors.black, fontSize: 10, marginBottom: 1 }}>Assistance</Text>
                                 </View>
@@ -72,8 +78,8 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
                                 <View style={{ alignItems: 'center' }}>
                                     <View style={styles.middleIcon}>
                                         {/* {isFocused ? <MaterialCommunityIcons name="home" size={40} color={colors.white} /> : */}
-                                        {isFocused ? <Image source={images.ico_home} style={{ width: 40, height: 40, }} /> :
-                                            <Image source={images.ico_home} style={{ width: 40, height: 40, }} />
+                                        {isFocused ? <Image source={images.ico_home} style={{ width: 40, height: 40, tintColor: colors.white }} /> :
+                                            <Image source={images.ico_home} style={{ width: 40, height: 40, tintColor: colors.white }} />
                                         }
 
                                     </View>
@@ -115,7 +121,7 @@ const CustomTabBar: FC<any> = ({ state, descriptors, navigation, screen }) => {
 
 
 
-const MainNavigation: FC<any> = ({ route }) => {
+const MainNavigation: FC<any> = ({ route, notification }) => {
     const tab = createBottomTabNavigator()
     const dispatch = useDispatch<any>()
     const [isTabBarVisible, setIsTabBarVisible] = useState<boolean>(true);

@@ -1,6 +1,6 @@
 import RootNavigation from "./navigations/RootNavigation";
 import Store, { RootState } from "./redux/Store";
-import { TCompteurType, ICompteurStore, ICompteur, IDevisPayment, IHistorique, IISAGOreq, IISAGOsearch, IISAGOres, IISAGOstore, IFactureReq, IVille, IVillestore, IDevisReq, INotification, INotificationStore, IRegisterReq, IActualiteStore, IActualite, IRegisterRes, ILoginReq, ILoginRes, IValidation, IVerify, IStore, IResetReq, IInfoRes } from "./others/models"
+import { TCompteurType, ICompteurStore, ICompteur, IDevisPayment, IHistorique, IISAGOreq, IISAGOsearch, IISAGOres, IISAGOstore, IFactureReq, IVille, IVillestore, IDevisReq, INotification, INotificationStore, IRegisterReq, IActualiteStore, IActualite, IRegisterRes, ILoginReq, ILoginRes, IValidation, IVerify, IStore, IResetReq, IInfoRes, IAssistanceStore, IAssistanceModel } from "./others/models"
 import { images } from "./others/images";
 import { colors } from "./others/typography";
 import { comparaison, empty, handleChangeMobile, Expired, removePhoneIndicatif, reverseArray } from "./others/functions";
@@ -17,6 +17,7 @@ import { create_devis, getAllDevi, paiement_devis } from "./redux/actions/devis.
 import { getAllFacture, paiement_facture, searchFacture } from "./redux/actions/facture.action";
 import { getAllISAGO, paiement_isago, searchISAGO } from "./redux/actions/isago.action";
 import { create_compteur, delete_compteur, getAllCompteur, update_compteur } from "./redux/actions/compteur.action";
+import { sendAssistance } from "./redux/actions/assistance.action";
 
 export {
     type_compteur, type_demande, usage, civilite, typeID, api_fichiers, Store, images, colors, css,
@@ -28,7 +29,8 @@ export {
     deleteOneNotification, getVilles, devis_validation4, create_devis, getAllDevi,
     devis_validation1,
     devis_validation2, devis_validation3, getAllFacture, searchFacture, paiement_facture, update,
-    getAllISAGO, searchISAGO, paiement_isago, paiement_devis, create_compteur, getAllCompteur, update_compteur, delete_compteur, file_size_validation
+    getAllISAGO, searchISAGO, paiement_isago, paiement_devis, create_compteur, getAllCompteur, update_compteur, delete_compteur, file_size_validation,
+    sendAssistance
 }
 
 
@@ -37,6 +39,6 @@ export type {
     IDevisPayment, IHistorique, IISAGOreq, IISAGOsearch, IISAGOres, IISAGOstore, IFactureReq,
     IVille, IVillestore, IDevisReq, INotification, INotificationStore, IActualite, IActualiteStore, IRegisterReq,
     IRegisterRes, ILoginReq, ILoginRes, IValidation, IVerify, IStore, IResetReq, RootState, IInfoRes, ICompteur,
-    ICompteurStore, TCompteurType
+    ICompteurStore, TCompteurType, IAssistanceStore, IAssistanceModel
 }
 

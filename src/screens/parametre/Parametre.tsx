@@ -210,7 +210,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                     </View>
 
                     <TouchableOpacity onPress={handleEditUser} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" }}>
-                        <Text style={{ color: colors.white }}>Enregistrer les modifications</Text>
+                        {!user_loading ? <Text style={{ color: colors.white }}>Enregistrer les modifications</Text> : <ActivityIndicator size={'small'} color={colors.white} />}
                     </TouchableOpacity>
 
                 </ScrollView>
@@ -227,7 +227,7 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={styles.desc_container}>
                     <View style={{ gap: 10 }}>
                         <View style={{ gap: 5 }}>
-                            <Text style={{ color: colors.dark }}>Label <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
+                            <Text style={{ color: colors.dark }}>Libellé <Text style={{ fontSize: 13, fontStyle: "italic" }}>(Text de distinction compteur)</Text></Text>
                             <TextInput value={inputsCompteur.label} onChangeText={text => handleChangeMobile("label", text, setInputsCompteur)} style={{ borderWidth: 0.2, borderRadius: 5, padding: 15, color: colors.dark }} />
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.label}</Text>
                         </View>
@@ -251,8 +251,8 @@ const Parametre: FC<any> = ({ navigation, route }) => {
                             <Text style={{ fontSize: 10, color: colors.danger }}>{error.number}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={handleAddCompteur} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" }}>
-                        <Text style={{ color: colors.white }}>Enregister</Text>
+                    <TouchableOpacity disabled={c_loading ? true : false} onPress={handleAddCompteur} style={{ borderRadius: 5, padding: 15, backgroundColor: colors.main, alignItems: "center", justifyContent: "center" }}>
+                        {!c_loading ? <Text style={{ color: colors.white }}>Enregister</Text> : <ActivityIndicator size={'small'} color={colors.white} />}
                     </TouchableOpacity>
 
                 </ScrollView>

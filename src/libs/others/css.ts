@@ -12,7 +12,7 @@ const auth = StyleSheet.create(
         subtitle: { color: colors.black, letterSpacing: 1, textAlign: "center", fontSize: 13, marginBottom: 10 },
         button: { backgroundColor: colors.red, padding: 15, alignItems: "center", justifyContent: "center", borderRadius: 5 },
         separator: { height: 20 },
-        trybox: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
+        trybox: { flexDirection: "row", alignItems: "center", justifyContent: "center", flexWrap: 'wrap' },
         try: { textAlign: "center", color: colors.dark },
         toast: { zIndex: 100, },
     }

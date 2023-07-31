@@ -12,6 +12,7 @@ import { getAllISAGO } from '../redux/actions/isago.action'
 import { getAllDevi } from '../redux/actions/devis.action'
 import { getAllNotifications } from '../redux/actions/notification.action'
 import { getAllCompteur, getAllCompteurClassic, getAllCompteurISAGO } from '../redux/actions/compteur.action'
+import { get_all_assistance_chats } from '../redux/actions/assistance.action'
 
 const RootNavigation = () => {
     const { auth } = useSelector((state: RootState) => state?.user)
@@ -30,6 +31,7 @@ const RootNavigation = () => {
             dispatch(getAllCompteurClassic(auth?.id, auth?.accessToken));
             dispatch(getAllCompteurISAGO(auth?.id, auth?.accessToken));
             dispatch(getAllCompteur(auth?.id, auth?.accessToken));
+            dispatch(get_all_assistance_chats(auth?.id, auth?.accessToken));
         }
     }, [dispatch, auth])
 

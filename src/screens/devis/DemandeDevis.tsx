@@ -66,60 +66,69 @@ const DemandeDevis: FC<any> = ({ navigation }) => {
         const _inputs: any = await AsyncStorage.getItem('quit')
         const inpt = JSON.parse(_inputs)
 
-        if (inpt) {
+        if (inputs) {
 
-            if (devis_validation4(inpt) !== "") {
-                setError(devis_validation4(inpt))
+            if (devis_validation4(inputs) !== "") {
+                setError(devis_validation4(inputs))
                 return;
             }
 
+            console.log("====================")
+            console.log(inputs)
+            console.log("====================")
+
+
             const blob: FormData = new FormData()
-            blob.append("typeCompteur", inpt.typeCompteur)
-            blob.append("typeDemande", inpt.typeDemande)
-            blob.append("usage", inpt.usage)
-            blob.append("climatiseur", inpt.climatiseur)
-            blob.append("ventilateur", inpt.ventilateur)
-            blob.append("machineLaver", inpt.machineLaver)
-            blob.append("ampoule", inpt.ampoule)
-            blob.append("chauffeEau", inpt.chauffeEau)
-            blob.append("ordinateur", inpt.ordinateur)
-            blob.append("telephone", inpt.telephone)
-            blob.append("congelateur", inpt.congelateur)
-            blob.append("refrigerateur", inpt.refrigerateur)
-            blob.append("televiseur", inpt.televiseur)
-            blob.append("bouilloireElectrique", inpt.bouilloireElectrique)
-            blob.append("ferRepasser", inpt.ferRepasser)
-            blob.append("autre", inpt.autre)
-            blob.append("civilite", inpt.civilite)
-            blob.append("nom", inpt.nom)
-            blob.append("prenom", inpt.prenom)
-            blob.append("nomJeuneFille", inpt.nomJeuneFille)
-            blob.append("profession", inpt.profession)
-            blob.append("typeIdentification", inpt.typeIdentification)
-            blob.append("numeroIdentification", inpt.numeroIdentification)
-            blob.append("telephoneMobile", inpt.telephoneMobile)
-            blob.append("localisation", inpt?.localisation)
 
-            blob.append("telephoneFixe", inpt.telephoneFixe)
-            blob.append("email", inpt.email)
-            blob.append("villeId", inpt.villeId)
-            blob.append("commune", inpt.commune)
-            blob.append("quartier", inpt.quartier)
-            blob.append("rue", inpt.rue)
-            blob.append("porte", inpt.porte)
-            blob.append("lot", inpt.lot)
-            blob.append("procheDe", inpt.procheDe)
-            blob.append("customerId", inpt.customerId)
+            blob.append("proTitrePropriete", inputs.proTitrePropriete)
+            blob.append("quittusEdm", inputs.quittusEdm)
+            blob.append("proCopieIdentite", inputs.proCopieIdentite)
+            blob.append("proCopieVisa", inputs.proCopieVisa)
 
-            blob.append("proTitrePropriete", inpt.proTitrePropriete)
-            blob.append("quittusEdm", inpt.quittusEdm)
-            blob.append("proCopieIdentite", inpt.proCopieIdentite)
-            blob.append("proCopieVisa", inpt.proCopieVisa)
-            blob.append("locTitrePropriete", inpt.locTitrePropriete)
-            blob.append("autBranchement", inpt.autBranchement)
-            blob.append("locCopieIdentiteProprietaire", inpt.locCopieIdentiteProprietaire)
-            blob.append("locCopieIdentiteLocataire", inpt.locCopieIdentiteLocataire)
-            blob.append("locCopieVisa", inpt.locCopieVisa)
+            blob.append("locTitrePropriete", inputs.locTitrePropriete)
+            blob.append("autBranchement", inputs.autBranchement)
+            blob.append("locCopieIdentiteProprietaire", inputs.locCopieIdentiteProprietaire)
+            blob.append("locCopieIdentiteLocataire", inputs.locCopieIdentiteLocataire)
+            blob.append("locCopieVisa", inputs.locCopieVisa)
+
+            blob.append("customerId", auth?.id)
+            blob.append("typeCompteur", inputs.typeCompteur)
+            blob.append("typeDemande", inputs.typeDemande)
+            blob.append("usage", inputs.usage)
+            blob.append("climatiseur", inputs.climatiseur)
+            blob.append("ventilateur", inputs.ventilateur)
+            blob.append("machineLaver", inputs.machineLaver)
+            blob.append("ampoule", inputs.ampoule)
+            blob.append("chauffeEau", inputs.chauffeEau)
+            blob.append("ordinateur", inputs.ordinateur)
+            blob.append("telephone", inputs.telephone)
+            blob.append("congelateur", inputs.congelateur)
+            blob.append("refrigerateur", inputs.refrigerateur)
+            blob.append("televiseur", inputs.televiseur)
+            blob.append("bouilloireElectrique", inputs.bouilloireElectrique)
+            blob.append("ferRepasser", inputs.ferRepasser)
+            blob.append("autre", inputs.autre)
+            blob.append("civilite", inputs.civilite)
+            blob.append("nom", inputs.nom)
+            blob.append("prenom", inputs.prenom)
+            blob.append("nomJeuneFille", inputs.nomJeuneFille)
+            blob.append("profession", inputs.profession)
+            blob.append("typeIdentification", inputs.typeIdentification)
+            blob.append("numeroIdentification", inputs.numeroIdentification)
+            blob.append("telephoneMobile", inputs.telephoneMobile)
+            blob.append("localisation", inputs?.localisation)
+
+            blob.append("telephoneFixe", inputs.telephoneFixe)
+            blob.append("email", inputs.email)
+            blob.append("villeId", inputs.villeId)
+            blob.append("commune", inputs.commune)
+            blob.append("quartier", inputs.quartier)
+            blob.append("rue", inputs.rue)
+            blob.append("porte", inputs.porte)
+            blob.append("lot", inputs.lot)
+            blob.append("procheDe", inputs.procheDe)
+
+            console.log(blob)
 
             setClick(true)
             if (auth)
@@ -202,7 +211,7 @@ const DemandeDevis: FC<any> = ({ navigation }) => {
     const renderContent = () => {
         switch (activeTab) {
             case 0:
-                return <General files={files} setFiles={setFiles} typeVille={typeVille} setTypeVille={setTypeVille} scrollViewRef={scrollViewRef} setError={setError} val={val} tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} typeCpt={typeCpt} setTypeCpt={setTypeCpt} typeDemande={typeDemande} setTypeDemande={setTypeDemande} typeUsage={typeUsage} setTypeUsage={setTypeUsage} typeCivilite={typeCivilite} setTypeCivilite={setTypeCivilite} typeTID={typeTID} setTypeTID={setTypeTID} inputs={inputs} setInputs={setinputs} />;
+                return <General scrollViewRef={scrollViewRef} files={files} setFiles={setFiles} typeVille={typeVille} setTypeVille={setTypeVille} setError={setError} val={val} tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} typeCpt={typeCpt} setTypeCpt={setTypeCpt} typeDemande={typeDemande} setTypeDemande={setTypeDemande} typeUsage={typeUsage} setTypeUsage={setTypeUsage} typeCivilite={typeCivilite} setTypeCivilite={setTypeCivilite} typeTID={typeTID} setTypeTID={setTypeTID} inputs={inputs} setInputs={setinputs} />;
             case 1:
                 return <Infos scrollViewRef={scrollViewRef} setError={setError} files={files} setFiles={setFiles} setVal={setVal} tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} inputs={inputs} setInputs={setinputs} />;
             case 2:

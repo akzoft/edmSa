@@ -12,6 +12,7 @@ import { ActualitySwiper, HomeCard } from '../../components'
 import { Image } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useIsFocused } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Home: FC<any> = ({ navigation }) => {
     const [showModal, setShowModal] = useState<boolean>(false)
@@ -19,11 +20,15 @@ const Home: FC<any> = ({ navigation }) => {
     const isFocused = useIsFocused();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const viewRef = useRef(null);
-    const { auth } = useSelector((state: RootState) => state?.user)
+    const { auth, edm_news, edm_actus } = useSelector((state: RootState) => state?.user)
+
 
     useEffect(() => {
         if (auth) {
-            dispatch(getAllInformations(auth?.accessToken))
+            AsyncStorage.getItem('quartierId').then((res: any) => {
+                const quarterId = JSON.parse(res)
+                dispatch(getAllInformations(quarterId, auth?.accessToken))
+            }).catch(err => console.log(err))
             dispatch(getAllActualites(auth?.accessToken))
         }
     }, [auth, dispatch])
@@ -45,10 +50,24 @@ const Home: FC<any> = ({ navigation }) => {
         }
     }, [fadeAnim, isFocused]);
 
+    useEffect(() => {
+        if (edm_news === undefined) {
+            navigation.navigate('infos')
+            dispatch({ type: 'reset_edm_news' })
+        }
+
+        if (edm_actus === undefined) {
+            navigation.navigate('actualite')
+            dispatch({ type: 'reset_edm_actus' })
+        }
+    }, [edm_news, edm_actus, dispatch, navigation]);
+
 
     const handleDisconnect = () => {
         dispatch(deconnexion())
     }
+
+
 
     return (
         <Animated.View ref={viewRef} style={[css.home.container, { opacity: fadeAnim, flex: 1 }]}>

@@ -36,14 +36,23 @@ const Actualite: FC<any> = () => {
                 </ScrollView>
             </Overlay>
             <StatusBar barStyle={"light-content"} backgroundColor={colors.main} />
-            <View style={{ backgroundColor: colors.body }}>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-                    <View style={styles.container}>
-                        {actualites?.map((info, i) => (<ActualiteCard key={i} info={info} setInfo={setInfo} toggleOverlay={toggleOverlay} />))}
-                    </View>
-                    <View style={styles.separator} />
-                </ScrollView>
-            </View>
+            {actualites?.length > 0 ?
+                <View style={{ backgroundColor: colors.body }}>
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+                        <View style={styles.container}>
+                            {
+                                actualites?.map((info, i) => (<ActualiteCard key={i} info={info} setInfo={setInfo} toggleOverlay={toggleOverlay} />))
+                            }
+                        </View>
+                        <View style={styles.separator} />
+                    </ScrollView>
+
+
+                </View> :
+                <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ color: colors.main }}>Liste d'actualité vide</Text>
+                </View>
+            }
         </View>
     )
 }

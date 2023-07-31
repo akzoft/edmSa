@@ -61,7 +61,7 @@ const Historique = () => {
     return (
         <Animated.View ref={viewRef} style={[{ opacity: fadeAnim, backgroundColor: colors.body, flex: 1 }]}>
             <View style={{ flex: 1 }}>
-                <FlatList
+                {historiqueDatas?.length > 0 ? <FlatList
                     data={reverseArray(historiqueDatas)?.slice(0, loadedItems)}
                     renderItem={({ item: facture }) => {
 
@@ -80,7 +80,11 @@ const Historique = () => {
                     contentContainerStyle={{ padding: 10, gap: 10 }}
                     onEndReached={handleEndReached}
                     onEndReachedThreshold={0.8} // Appeler onEndReached lorsque vous êtes à 50% de la fin de la liste
-                />
+                /> :
+
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ color: colors.main }}>Liste d'historique vide</Text>
+                    </View>}
                 {isLoading && <ActivityIndicator size="small" color="gray" style={{ marginBottom: 20, backgroundColor: colors.body }} />}
             </View>
         </Animated.View>

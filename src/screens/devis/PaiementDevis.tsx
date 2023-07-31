@@ -7,6 +7,7 @@ import { Overlay } from 'react-native-elements'
 import { useDispatch, useSelector } from 'react-redux'
 import Toast from 'react-native-toast-message'
 import { formatNumberWithSpaces } from '../../libs/others/functions'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const PaiementDevis: FC<any> = ({ navigation, route }) => {
     const routes = route?.params;
@@ -15,21 +16,28 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
     const [devis, setDevis] = useState<IDevisReq>();
     const [error, setError] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
+    const [result, setResult] = useState<any>('');
     const [overType, setOverType] = useState({ process: true, message: false, cancel: false })
-    const { tmp, ok, s_loading, errors } = useSelector((state: RootState) => state?.devis)
+    const { tmp, ok, s_loading, errors, notif } = useSelector((state: RootState) => state?.devis)
     const { auth } = useSelector((state: RootState) => state?.user)
 
 
     //display errors if exist
-    // useEffect(() => {
-    //     if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Erreurs', text2: errors ? errors : error && error, }); }
-    // }, [error, errors])
+    useEffect(() => {
+        if (((errors && errors !== null) || (error && error != ""))) { Toast.show({ type: 'error', text1: 'Erreurs', text2: errors ? errors : error && error, }); }
+    }, [error, errors])
 
     const toggleOverlay = () => { setVisible(!visible) }
-
     useEffect(() => {
         setDevis(routes?.devis)
-    }, [routes]);
+    }, [routes, tmp, ok, route]);
+
+    useEffect(() => {
+        AsyncStorage.getItem('notif').then((ans: any) => {
+            const _ans = JSON.parse(ans)
+            setResult(notif || _ans)
+        }).catch(err => console.log(err))
+    }, [notif]);
 
     useEffect(() => {
         if (ok && ok !== 'sent') {
@@ -64,12 +72,12 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
                     <View style={{ height: 180, }}>
                         <View style={[{ position: "relative", alignItems: "center", justifyContent: "center" }]}>
 
-                            <View style={{ position: "absolute", borderWidth: 0, borderColor: colors.white, width: 180, height: 180, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
+                            <View style={{ position: "absolute", borderWidth: 0, borderColor: colors.white, width: 170, height: 170, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
                                 <Image source={images.vitepay} style={{ width: "100%", height: "100%", borderRadius: 180, resizeMode: "contain", }} />
                             </View>
                             <TouchableOpacity style={{ alignSelf: "flex-end", padding: 10, backgroundColor: colors.black, borderRadius: 50 }} activeOpacity={0.7} onPress={toggleOverlay}><Fontisto name="close-a" size={18} style={{ color: colors.red }} /></TouchableOpacity>
-
                         </View>
+
                         <View style={{ alignItems: "center", marginTop: 50 }}>
                             <Text style={{ fontSize: 22, fontWeight: "bold", color: colors.black, textTransform: "uppercase" }}>VITEPAY</Text>
                             <Text style={{ fontSize: 14, fontWeight: "bold", color: colors.black }}>Achat chez vitepay</Text>
@@ -106,60 +114,53 @@ const PaiementDevis: FC<any> = ({ navigation, route }) => {
                                 </View>
                             </View>
                         </ScrollView> :
-                        overType.message ?
-                            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                                <View style={{ alignItems: "center" }}>
-                                    <Text style={{ fontSize: 20, color: colors.warning, textAlign: "center" }}>PAIEMENT DEVIS {devis?.typeCompteur} en attente</Text>
-                                </View>
+                        overType.message &&
+                        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={styles.sheetcontainer}>
 
-                                <View>
-                                    <Text style={{ fontSize: 15, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {`${devis?.nom} ${devis?.prenom}`}</Text>
-                                    <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>{devis?.typeCompteur}</Text>
-                                    {/* <Text style={{ fontSize: 20, color: colors.black, textAlign: "center", marginTop: 20 }}>Vous avez un paiement en attente. Composez <Text style={{ fontWeight: "bold" }}>#144#3*6#</Text> pour le valider avant 60 minutes.</Text> */}
 
-                                    <Text style={{ fontSize: 18, color: colors.black, textAlign: "justify", marginTop: 10, }}>
+                            <View style={{ alignItems: "center" }}>
+                                <Text style={{ fontSize: 16, color: colors.black, textAlign: "center" }}>Paiement de devis</Text>
+                            </View>
+
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                {result && result === 'pending' &&
+                                    <>
+                                        <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: <Text style={{ color: colors.black, fontWeight: 'bold' }}>{`${devis?.nom} ${devis?.prenom}`}</Text></Text>
+                                        <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", fontWeight: 'bold' }}>{devis?.typeCompteur}</Text>
+                                    </>
+                                }
+
+                                {result && result === 'pending' &&
+                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "justify", marginTop: 10, }}>
                                         Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
                                     </Text>
+                                }
+
+                                <View style={{ marginTop: 20 }}>
+                                    {result && result === 'pending' ?
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <ActivityIndicator size={80} color={colors.warning} style={{ width: 40 }} />
+                                            <Text style={{ color: colors.warning, fontSize: 10, marginTop: 4 }}>En attente de confirmation</Text>
+                                        </View> :
+                                        result && result === 'échoué' ?
+                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                                <Image source={images.echec} style={{ width: 100, height: 100, tintColor: colors.danger }} />
+                                                <Text style={{ color: colors.danger, fontSize: 14, marginTop: 4, }}>Paiement devis échoué</Text>
+                                            </View> :
+                                            result && result === 'reussi' &&
+                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                                <Image source={images.correct} style={{ width: 80, height: 80, tintColor: colors.success }} />
+                                                <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement devis réussi</Text>
+                                            </View>
+                                    }
                                 </View>
-
-                                {/* <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Nouvelle recharge</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                </TouchableOpacity>
-                            </View> */}
-                            </ScrollView> :
-                            overType.cancel &&
-                            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                                <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                    <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
-                                        <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
-                                    </View>
-                                    <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT ANNULEE</Text>
-                                </View>
-
-                                <View>
-                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de devis a été annulé. Veuillez réessayer de nouveau</Text>
-                                </View>
-                                {/* 
-                            <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Nouvelle recharge</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                </TouchableOpacity>
-                            </View> */}
-                            </ScrollView>
+                            </View>
+                        </ScrollView>
                     }
                 </Overlay>
 
                 <View style={styles.content}>
-                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+                    <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={{ flexGrow: 1 }}>
                         <View style={styles.forms}>
                             <View style={{ width: "100%", gap: 40 }}>
 
@@ -206,8 +207,7 @@ export default PaiementDevis
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.main },
     content: {
-        flex: 1,
-        backgroundColor: colors.body, borderTopLeftRadius: 60, borderTopRightRadius: 60, padding: 30
+        flex: 1, backgroundColor: colors.body, borderTopLeftRadius: 60, borderTopRightRadius: 60, padding: 30
     },
     forms: {
         flex: 1, alignItems: "center", gap: 10, justifyContent: "center",

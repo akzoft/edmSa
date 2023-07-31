@@ -37,7 +37,7 @@ const Infos: FC<any> = () => {
                 </ScrollView>
             </Overlay>
             <StatusBar barStyle={"light-content"} backgroundColor={colors.main} />
-            <View style={{ backgroundColor: colors.body }}>
+            {infos?.length > 0 ? <View style={{ backgroundColor: colors.body }}>
                 {/* <View style={css.home.content}> */}
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={styles.container}>
@@ -46,6 +46,11 @@ const Infos: FC<any> = () => {
                     <View style={styles.separator} />
                 </ScrollView>
             </View>
+                :
+                <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ color: colors.main }}>Liste d'information vide</Text>
+                </View>
+            }
         </View>
     )
 }

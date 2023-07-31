@@ -11,6 +11,7 @@ import { formatNumberWithSpaces } from '../../libs/others/functions'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { CustomLoader, FavoriteFactureCard } from '../../components'
 import { dummyFacture } from '../../libs/others/constants'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const PaiementFacture: FC<any> = ({ navigation, route }) => {
     const routes = route?.params;
@@ -24,10 +25,11 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
     const [error, setError] = useState<any>({ phone: '', montant: '' });
     const { auth, user_loading } = useSelector((state: RootState) => state?.user)
     const [click, setClick] = useState(false);
-    const { tmp, ok, facture_loading } = useSelector((state: RootState) => state?.facture)
+    const { tmp, ok, facture_loading, notif } = useSelector((state: RootState) => state?.facture)
+    const [result, setResult] = useState<any>('');
 
     useEffect(() => {
-        setFacture(routes?.facture)
+        setFacture(routes?.factures[0])
     }, [routes]);
 
     useEffect(() => {
@@ -43,6 +45,13 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
         }
     }, [tmp]);
 
+
+    useEffect(() => {
+        AsyncStorage.getItem('notif').then((ans: any) => {
+            const _ans = JSON.parse(ans)
+            setResult(notif || _ans)
+        }).catch(err => console.log(err))
+    }, [notif]);
 
 
     const handleBuy = () => {
@@ -65,7 +74,10 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
                 dispatch(paiement_facture(data, auth?.accessToken))
             }
         setClick(true)
+
+
     }
+
 
     if (!click && (facture_loading || user_loading))
         return <CustomLoader />
@@ -77,7 +89,7 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
                 <View style={{ height: 180, }}>
                     <View style={[{ position: "relative", alignItems: "center", justifyContent: "center" }]}>
 
-                        <View style={{ position: "absolute", borderBottomWidth: 0, borderBottomColor: colors.main, width: 180, height: 180, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
+                        <View style={{ position: "absolute", borderBottomWidth: 0, borderBottomColor: colors.main, width: 170, height: 170, top: "-250%", alignItems: "center", justifyContent: "center", borderRadius: 180, backgroundColor: colors.white, alignSelf: "center" }}>
                             <Image source={images.vitepay} style={{ width: "100%", height: "100%", borderRadius: 180, resizeMode: "contain", }} />
                         </View>
                         <TouchableOpacity style={{ alignSelf: "flex-end", padding: 10 }} activeOpacity={0.7} onPress={toggleOverlay}><Fontisto name="close-a" size={18} style={{ color: colors.red }} /></TouchableOpacity>
@@ -91,18 +103,18 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
                 </View>
 
                 {overType.process ?
-                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
+                    <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={styles.sheetcontainer}>
                         <View>
                             <View style={{ gap: 15 }}>
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20, color: colors.dark }}>Téléphone</Text>
-                                    <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
+                                    <TextInput keyboardType="phone-pad" style={{ color: colors.main }} placeholderTextColor={'rgba(0,0,0,0.5)'} placeholder="Numéro orange (sans l'indicatif)" value={phone} onChangeText={text => setPhone(text)} />
                                     <Text style={{ fontSize: 10, color: colors.danger }}>{error.phone}</Text>
                                 </View>
 
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
                                     <Text style={{ fontSize: 20, color: colors.dark }}>Montant</Text>
-                                    <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}><Text>{formatNumberWithSpaces(facture?.amountToBePaid)}</Text><Text>F CFA</Text></View>
+                                    <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}><Text style={{ color: colors.main }}>{formatNumberWithSpaces(facture?.amountToBePaid || routes?.factures[0]?.amountToBePaid)}</Text><Text style={{ color: colors.main }}>F CFA</Text></View>
                                     {/* <TextInput keyboardType="phone-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} placeholder="Montant à payer" value={facture?.amountToBePaid?.toString()} onChangeText={text => setMontant(text)} /> */}
                                     <Text style={{ fontSize: 10, color: colors.danger }}>{error.montant}</Text>
                                 </View>
@@ -120,96 +132,78 @@ const PaiementFacture: FC<any> = ({ navigation, route }) => {
                             </View>
                         </View>
                     </ScrollView> :
-                    overType.message ?
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                            <View style={{ alignItems: "center" }}>
-                                <Text style={{ fontSize: 20, color: colors.warning, textAlign: "center" }}>PAIEMENT FACTURE POST PAID en attente</Text>
+                    overType.message &&
+                    <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={styles.sheetcontainer}>
+                        <View style={{ alignItems: "center" }}>
+                            <Text style={{ fontSize: 14, color: colors.black, textAlign: "center" }}>PAIEMENT FACTURE POST PAID</Text>
+                        </View>
+
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            {result && result === 'pending' && <>
+                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {routes?.factures[0]?.owner}</Text>
+                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center" }}>Compteur N° {routes?.factures[0]?.compteur}</Text>
+                            </>}
+                            {/* <Text style={{ fontSize: 20, color: colors.black, textAlign: "center", marginTop: 20 }}>Vous avez un paiement en attente. Composez <Text style={{ fontWeight: "bold" }}>#144#3*6#</Text> pour le valider avant 60 minutes.</Text> */}
+
+                            {result && result === 'pending' && <Text style={{ fontSize: 12, color: colors.black, textAlign: "justify", marginTop: 10, }}>
+                                Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
+                            </Text>}
+
+                            <View style={{ marginTop: 20 }}>
+                                {result && result === 'pending' ?
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                        <ActivityIndicator size={80} color={colors.warning} style={{ width: 40 }} />
+                                        <Text style={{ color: colors.warning, fontSize: 10, marginTop: 4 }}>En attente de confirmation</Text>
+                                    </View> :
+                                    result && result === 'échoué' ?
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <Image source={images.echec} style={{ width: 100, height: 100, tintColor: colors.danger }} />
+                                            <Text style={{ color: colors.danger, fontSize: 14, marginTop: 4, }}>Paiement facture échoué</Text>
+                                        </View> :
+                                        result && result === 'reussi' &&
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <Image source={images.correct} style={{ width: 80, height: 80, tintColor: colors.success }} />
+                                            <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement facture réussi</Text>
+                                        </View>
+                                }
                             </View>
-
-                            <View>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {facture?.owner}</Text>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>Compteur N° {facture?.compteur}</Text>
-                                {/* <Text style={{ fontSize: 20, color: colors.black, textAlign: "center", marginTop: 20 }}>Vous avez un paiement en attente. Composez <Text style={{ fontWeight: "bold" }}>#144#3*6#</Text> pour le valider avant 60 minutes.</Text> */}
-
-                                <Text style={{ fontSize: 18, color: colors.black, textAlign: "justify", marginTop: 10, }}>
-                                    Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
-                                </Text>
-
-                                <View style={{ marginTop: 20 }}>
-                                    <TouchableOpacity onPress={handleBuy} style={{ backgroundColor: facture?.status === 'PAID' ? colors.white : colors.main, padding: 15, borderRadius: 10 }}>
-                                        {facture?.status === 'PENDING' ?
-                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                                <ActivityIndicator size={'small'} color={'white'} />
-                                                <Text style={{ color: colors.white, fontSize: 8, marginTop: 4 }}>En attente de confirmation</Text>
-                                            </View> : facture?.status === 'PAID' &&
-                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                                <FontAwesome5 name='check-circle' size={28} color={colors.success} />
-                                                <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement facture réussi</Text>
-                                            </View>
-                                        }
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </ScrollView> :
-                        overType.cancel &&
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                            <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
-                                    <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
-                                </View>
-                                <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>PAIEMENT ANNULé</Text>
-                            </View>
-
-                            <View>
-                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de facture No. 100255N a été annulé. Veuillez réessayer de nouveau.</Text>
-                            </View>
-
-                            <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Payer une facture</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </ScrollView>
+                        </View>
+                    </ScrollView>
                 }
             </Overlay>
 
             <View style={styles.content}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-                    {dummyFacture?.length > 0 &&
-                        <View style={{ marginTop: 40 }}>
+                    {routes?.factures?.length > 0 &&
+                        <View style={{}}>
                             <Text style={{ fontSize: 22, color: colors.black, fontWeight: 'bold' }}>Factures impayées</Text>
 
                             <View style={{ flexDirection: 'row', gap: 15 }}>
-
                                 <FlatList
-                                    data={dummyFacture}
+                                    data={routes?.factures}
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
-                                    renderItem={({ item }) => {
+                                    renderItem={({ item, index }) => {
                                         return <View>
-                                            <FavoriteFactureCard key={item.no.toString()} facture={item} />
+                                            <FavoriteFactureCard key={index} facture={item} setFacture={setFacture} />
                                         </View>
                                     }}
-                                    keyExtractor={(item) => item.no.toString()}
+                                    keyExtractor={(item, index) => index.toString()}
                                     contentContainerStyle={{ gap: 10 }}
                                 />
                             </View>
 
                         </View>}
+
+
                     <View style={styles.forms}>
-
-
-                        <View style={{ width: "100%", gap: 60 }}>
-
+                        <View style={{ width: "100%", gap: 20 }}>
                             <View>
-                                <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Facture N° {facture?.compteur}</Text>
-                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Nom et Prénom : <Text style={{ color: colors.black, fontWeight: "bold" }}>{facture?.owner}</Text></Text>
-                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>N° compteur: <Text style={{ color: colors.black, fontWeight: "bold" }}>{facture?.compteur}</Text></Text>
-                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Montant à payer: <Text style={{ color: colors.black, fontWeight: "bold" }}>{formatNumberWithSpaces(facture?.amountToBePaid)} FCFA</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 22, textTransform: "uppercase", color: colors.black }}>Facture N° {routes?.factures[0]?.compteur}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Nom et Prénom : <Text style={{ color: colors.black, fontWeight: "bold" }}>{routes?.factures[0]?.owner}</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>N° compteur: <Text style={{ color: colors.black, fontWeight: "bold" }}>{routes?.factures[0]?.compteur}</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark }}>Montant à payer: <Text style={{ color: colors.black, fontWeight: "bold" }}>{formatNumberWithSpaces(routes?.factures[0]?.amountToBePaid)} FCFA</Text></Text>
+                                <Text style={{ textAlign: "center", fontSize: 15, color: colors.dark, marginTop: 15 }}>Payer avant le: <Text style={{ color: colors.black, fontWeight: "bold" }}>{routes?.factures[0]?.edition}</Text></Text>
                             </View>
 
 

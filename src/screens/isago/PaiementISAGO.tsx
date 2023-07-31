@@ -7,6 +7,7 @@ import { Overlay } from 'react-native-elements'
 import { useDispatch, useSelector } from 'react-redux'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { CustomLoader } from '../../components'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     const routes = route?.params;
@@ -18,8 +19,9 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
     const [phone, setPhone] = useState<string>("");
     const [error, setError] = useState<any>({ phone: '', montant: '' });
     const [click, setClick] = useState(false);
+    const [result, setResult] = useState<any>('');
     const { auth, user_loading } = useSelector((state: RootState) => state?.user)
-    const { tmp, ok, isago_loading } = useSelector((state: RootState) => state?.isago)
+    const { tmp, ok, isago_loading, notif } = useSelector((state: RootState) => state?.isago)
 
 
     const toggleOverlay = () => { setVisible(!visible) }
@@ -41,6 +43,13 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
             setClick(false)
         }
     }, [tmp]);
+
+    useEffect(() => {
+        AsyncStorage.getItem('notif').then((ans: any) => {
+            const _ans = JSON.parse(ans)
+            setResult(notif || _ans)
+        }).catch(err => console.log(err))
+    }, [notif]);
 
     const handleBuy = () => {
 
@@ -94,7 +103,7 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                 </View>
 
                 {overType.process ?
-                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
+                    <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={styles.sheetcontainer}>
                         <View>
                             <View style={{ gap: 15 }}>
                                 <View style={{ borderWidth: 1, borderColor: colors.dark, padding: 10, paddingBottom: 5, borderRadius: 10 }}>
@@ -124,72 +133,52 @@ const PaiementISAGO: FC<any> = ({ navigation, route }) => {
                         </View>
                     </ScrollView> :
 
-                    overType.message ?
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                            <View style={{ alignItems: "center" }}>
-                                <Text style={{ fontSize: 20, color: isago?.status === 'PAID' ? colors.success : colors.warning, textAlign: "center" }}>Paiement crédit ISAGO <Text style={{}}>{isago?.status === 'PAID' ? 'réussi' : 'en attente'}</Text></Text>
-                            </View>
+                    overType.message &&
+                    <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={styles.sheetcontainer}>
+                        <View style={{ alignItems: "center" }}>
+                            <Text style={{ fontSize: 14, color: colors.black, textAlign: "center" }}>Paiement crédit ISAGO</Text>
+                        </View>
 
-                            <View>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {isago?.owner}</Text>
-                                <Text style={{ fontSize: 15, color: colors.black, textAlign: "center" }}>Compteur N° {isago?.compteur}</Text>
-                                {/* <Text style={{ fontSize: 20, color: colors.black, textAlign: "center", marginTop: 20 }}>Vous avez un paiement en attente. Composez <Text style={{ fontWeight: "bold" }}>#144#3*6#</Text> pour le valider avant 60 minutes.</Text> */}
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            {result && result === 'pending' &&
+                                <>
+                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 10 }}>Nom et Prénom: {isago?.owner}</Text>
+                                    <Text style={{ fontSize: 12, color: colors.black, textAlign: "center" }}>Compteur N° {isago?.compteur}</Text>
+                                </>
+                            }
 
-                                <Text style={{ fontSize: 18, color: colors.black, textAlign: "justify", marginTop: 10, }}>
+                            {result && result === 'pending' &&
+                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "justify", marginTop: 10, }}>
                                     Pour valider et terminer votre transaction, veuillez suivre les instructions envoyées au <Text style={{ fontWeight: "bold", color: colors.red }}>{phone}</Text>. Vous pouvez également saisir directement <Text style={{ fontWeight: "bold", color: colors.red }}>#144#3*6#</Text> (code USSD) sur votre téléphone pour afficher le menu de confirmation de paiement.
                                 </Text>
+                            }
 
-                                <View style={{ marginTop: 20 }}>
-                                    <TouchableOpacity onPress={handleBuy} style={{ backgroundColor: isago?.status === 'PAID' ? colors.white : colors.main, padding: 15, borderRadius: 10 }}>
-                                        {isago?.status === 'PENDING' ?
-                                            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                                <ActivityIndicator size={'small'} color={'white'} />
-                                                <Text style={{ color: colors.white, fontSize: 8, marginTop: 4 }}>En attente de confirmation</Text>
-                                            </View> :
-                                            isago?.status === 'PAID' ?
-                                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                                    <FontAwesome5 name='check-circle' size={28} color={colors.success} />
-                                                    <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement ISAGO réussi</Text>
-                                                </View> :
-                                                isago?.status === 'CANCELED' && <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                                    <FontAwesome5 name='times-circle' size={28} color={colors.danger} />
-                                                    <Text style={{ color: colors.danger, fontSize: 14, marginTop: 4, }}>Paiement ISAGO échoué</Text>
-                                                </View>
-                                        }
-                                    </TouchableOpacity>
-                                </View>
+                            <View style={{ marginTop: 20 }}>
+                                {result && result === 'pending' ?
+                                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                        <ActivityIndicator size={80} color={colors.warning} style={{ width: 40 }} />
+                                        <Text style={{ color: colors.warning, fontSize: 10, marginTop: 4 }}>En attente de confirmation</Text>
+                                    </View> :
+                                    result && result === 'échoué' ?
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <Image source={images.echec} style={{ width: 100, height: 100, tintColor: colors.danger }} />
+                                            <Text style={{ color: colors.danger, fontSize: 14, marginTop: 4, }}>Paiement crédit ISAGO échoué</Text>
+                                        </View> :
+                                        result && result === 'reussi' &&
+                                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                            <Image source={images.correct} style={{ width: 80, height: 80, tintColor: colors.success }} />
+                                            <Text style={{ color: colors.success, fontSize: 14, marginTop: 4, }}>Paiement crédit ISAGO réussi</Text>
+                                        </View>
+                                }
                             </View>
-                        </ScrollView> :
-
-                        overType.cancel &&
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetcontainer}>
-                            <View style={{ alignItems: "center", justifyContent: "center", gap: 5 }}>
-                                <View style={{ width: 90, height: 90, borderRadius: 90, backgroundColor: colors.danger, alignItems: "center", justifyContent: "center" }}>
-                                    <MaterialCommunityIcons name="cancel" size={50} color={colors.white} />
-                                </View>
-                                <Text style={{ color: colors.danger, textTransform: "uppercase", fontSize: 18 }}>RECHARGE ANNULéE</Text>
-                            </View>
-
-                            <View>
-                                <Text style={{ fontSize: 12, color: colors.black, textAlign: "center", marginTop: 20 }}>Votre paiement de credit ISAGO a été annulé. Veuillez réessayer de nouveau</Text>
-                            </View>
-
-                            <View style={{ position: "absolute", bottom: 0, flexDirection: "row", gap: 10 }}>
-                                <TouchableOpacity style={{ borderRadius: 5, backgroundColor: colors.main, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Nouvelle recharge</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity onPress={toggleOverlay} style={{ borderRadius: 5, backgroundColor: colors.red, padding: 15, flex: 1, justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={{ color: colors.white, fontWeight: "bold" }}>Fermer</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </ScrollView>
+                        </View>
+                    </ScrollView>
                 }
             </Overlay>
 
             <View style={styles.content}>
 
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'} contentContainerStyle={{ flexGrow: 1 }}>
                     <View style={styles.forms}>
                         <View style={{ width: "100%", gap: 40 }}>
 

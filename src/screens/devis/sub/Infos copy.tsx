@@ -1,26 +1,14 @@
-import { FC, useEffect, useState } from "react";
-import { LogBox, PermissionsAndroid, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FC, useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IDevisReq, colors, devis_validation3, file_size_validation } from "../../../libs";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DocumentPicker from 'react-native-document-picker'
-import ImageCropPicker from 'react-native-image-crop-picker'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Dialog from "react-native-dialog";
-import { request, PERMISSIONS } from 'react-native-permissions';
-import { Image } from 'react-native-compressor';
-
-
 
 type TFiles = { proTitrePropriete: any, quittusEdm: any, proCopieIdentite: any, proCopieVisa: any, locTitrePropriete: any, autBranchement: any, locCopieIdentiteProprietaire: any, locCopieIdentiteLocataire: any, locCopieVisa: any }
 type props = { scrollViewRef: any, setError: any, tabs: any, activeTab: any, setActiveTab: any, setVal: any, inputs: IDevisReq, setInputs: any, files: TFiles, setFiles: any }
-const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, setVal, files, setFiles, inputs, setInputs }) => {
+const Infos: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActiveTab, setVal, files, setFiles, inputs, setInputs }) => {
     const init: TFiles = { proTitrePropriete: null, quittusEdm: null, proCopieIdentite: null, proCopieVisa: null, locTitrePropriete: null, autBranchement: null, locCopieIdentiteProprietaire: null, locCopieIdentiteLocataire: null, locCopieVisa: null };
-    const [visible, setVisible] = useState(false);
-    const [fieldName, setFieldName] = useState('');
-    var dot = 4;
-
-    LogBox.ignoreAllLogs();
-
 
 
     //add to local storage
@@ -102,8 +90,9 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
         scrollViewRef.current.scrollTo({ y: 0, animated: true })
     };
 
+
     // gestion upload image
-    const pickImage = async () => {
+    const pickImage = async (fieldName: string) => {
         try {
             const _files: any = await DocumentPicker.pick({
                 type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
@@ -122,74 +111,10 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
         }
     };
 
-
-    //select image
-    const selectImage = () => {
-        PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((granted) => {
-                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    ImageCropPicker.openPicker({ cropping: true, cropperCircleOverlay: false, mediaType: 'photo', includeBase64: false, })
-                        .then((response: any) => {
-                            if (!response.cancelled) {
-                                //  setFile({ uri: response.path, type: 'image/jpeg', name: 'image.jpg', })
-
-                                Image.compress(response?.path, { compressionMethod: 'auto', quality: 0.2 })
-                                    .then(image => {
-                                        const imgs = image?.split('/')
-                                        const filename = imgs[imgs?.length - 1].split('.')[0]
-
-                                        setFiles((prevFiles: TFiles) => ({
-                                            ...prevFiles,
-                                            [fieldName]: { uri: image, type: 'image/jpeg', name: filename + '-image.jpg' },
-                                        }));
-                                    }).catch(err => { console.log(err) });
-                            }
-                        })
-                        .catch((error) => { setError(error) });
-                }
-            }).catch(err => { console.log(err) })
-
-        setVisible(false)
-    };
-
-    const takePhoto = async () => {
-
-        try {
-            const permission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
-            const granted = await request(permission);
-            if (granted === 'granted') {
-                const image = await ImageCropPicker.openCamera({ width: 300, height: 400, cropping: true, includeBase64: false })
-
-                const img = await Image.compress(image?.path, { compressionMethod: 'auto', quality: 0.2 })
-                const imgs = image?.path?.split('/')
-                const filename = imgs[imgs?.length - 1].split('.')[0]
-
-                setFiles((prevFiles: TFiles) => ({
-                    ...prevFiles,
-                    [fieldName]: { uri: img, type: 'image/jpeg', name: filename + '-image.jpg' },
-                }));
-
-            } else {
-                console.log('Permission refusée pour accéder à la caméra');
-            }
-            setVisible(false)
-        } catch (error) {
-            console.log(error);
-        }
-
-
-
-
-    };
-
-    const openToggle = (fieldName: string) => {
-        setVisible(!visible)
-        setFieldName(fieldName)
-    }
-
     const reset = () => {
         setFiles(init)
     }
+    var dot = 4;
 
     return (
         <View>
@@ -201,18 +126,6 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
                         <View style={{ width: "15%", height: 1, backgroundColor: dot === 4 ? colors.primary : colors.dark }} />
                     </View>))}
             </View> */}
-
-            <Dialog.Container visible={visible} contentStyle={{ borderRadius: 5, alignItems: 'center', justifyContent: 'center' }} >
-                <Dialog.Title>Choisissez une option</Dialog.Title>
-                <Dialog.Description>
-                    {'\n'}
-                    <Dialog.Button onPress={() => takePhoto()} label="Prendre une photo" style={{ textAlign: 'center', color: colors.info }} />
-                    {'\n'}
-                    {'\n'}
-                    <Dialog.Button onPress={() => selectImage()} label="Choisissez une image" style={{ textAlign: 'center', color: colors.info }} />
-                </Dialog.Description>
-                <Dialog.Button onPress={() => setVisible(false)} label="Annuler" style={{ color: colors.danger }} />
-            </Dialog.Container>
 
             <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 20, }}>
                 <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
@@ -227,8 +140,6 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
                 <TouchableOpacity onPress={reset}><Text style={{ fontWeight: "bold", fontSize: 10, textDecorationLine: "underline", color: colors.main }}>Effacer tout</Text></TouchableOpacity>
             </View>
 
-            {/* <View><Image source={files.proTitrePropriete} style={{ width: 80, height: 80 }} /></View> */}
-
 
             <View style={{ paddingHorizontal: 10 }}>
                 <Text style={{ color: colors.black, marginBottom: 20 }}>4.1 Propriétaire</Text>
@@ -237,7 +148,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("proTitrePropriete")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("proTitrePropriete")}>
                         <Text style={styles.sec_label}>Titre de propriété ou équivalent</Text>
                         {files?.proTitrePropriete ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -245,7 +156,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("quittusEdm")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("quittusEdm")}>
                         <Text style={styles.sec_label}>Quitus EDM / point de livraison</Text>
                         {files?.quittusEdm ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -253,7 +164,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("proCopieIdentite")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("proCopieIdentite")}>
                         <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP</Text>
                         {files?.proCopieIdentite ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -261,7 +172,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("proCopieVisa")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("proCopieVisa")}>
                         <Text style={styles.sec_label}>Copie VISA conformité ACAVIF</Text>
                         {files?.proCopieVisa ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -275,7 +186,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("locTitrePropriete")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("locTitrePropriete")}>
                         <Text style={styles.sec_label}>Titre de propriété ou équivalent</Text>
                         {files?.locTitrePropriete ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -283,7 +194,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("autBranchement")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("autBranchement")}>
                         <Text style={styles.sec_label}>Attestation Aut. branchement</Text>
                         {files?.autBranchement ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -291,7 +202,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("locCopieIdentiteProprietaire")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieIdentiteProprietaire")}>
                         <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP / proprio</Text>
                         {files?.locCopieIdentiteProprietaire ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -299,7 +210,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("locCopieIdentiteLocataire")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieIdentiteLocataire")}>
                         <Text style={styles.sec_label}>Copie carte ID ou NINA ou PP / local</Text>
                         {files?.locCopieIdentiteLocataire ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -307,7 +218,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
 
                     <View style={styles.separateur} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => openToggle("locCopieVisa")}>
+                    <TouchableOpacity style={styles.btn} onPress={() => pickImage("locCopieVisa")}>
                         <Text style={styles.sec_label}>Copie VISA conformité ACAVIF</Text>
                         {files?.locCopieVisa ? <FontAwesome name="check-circle" size={35} color={colors.success} /> :
                             <FontAwesome name="plus-circle" size={35} color={colors.main} />}
@@ -352,7 +263,7 @@ const Infoss: FC<props> = ({ scrollViewRef, setError, tabs, activeTab, setActive
     )
 }
 
-export default Infoss
+export default Infos
 
 const styles = StyleSheet.create({
     container: { paddingTop: 20 },

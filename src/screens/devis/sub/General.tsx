@@ -215,7 +215,7 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
 
                         <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.sec_label}>Nb. Chauffe eau</Text>
+                                <Text style={styles.sec_label}>Nb. Chauffe-eau</Text>
                                 <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.chauffeEau ? inputs.chauffeEau?.toString() : ""} onChangeText={text => handleChangeMobile("chauffeEau", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
@@ -238,22 +238,22 @@ const General: FC<props> = ({ files, setFiles, typeVille, setTypeVille, scrollVi
 
                         <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.sec_label}>Nb. Téléviseur</Text>
+                                <Text style={styles.sec_label}>Nb. Téléviseurs</Text>
                                 <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.televiseur ? inputs.televiseur?.toString() : ""} onChangeText={text => handleChangeMobile("televiseur", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.sec_label}>Nb. Boulloire électrique</Text>
+                                <Text style={[styles.sec_label, { fontSize: 13 }]}>Nb. Bouilloires électriques</Text>
                                 <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.bouilloireElectrique ? inputs.bouilloireElectrique?.toString() : ""} onChangeText={text => handleChangeMobile("bouilloireElectrique", text, setInputs)} />
                             </View>
                         </View>
 
                         <View style={[styles.form_item, { gap: 15, }]}>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.sec_label}>Nb. Fer à repasser</Text>
+                                <Text style={styles.sec_label}>Nb. Fers à repasser</Text>
                                 <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.ferRepasser ? inputs.ferRepasser?.toString() : ""} onChangeText={text => handleChangeMobile("ferRepasser", text, setInputs)} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.sec_label}>Nb. Téléphone</Text>
+                                <Text style={styles.sec_label}>Nb. Téléphones</Text>
                                 <TextInput keyboardType="number-pad" placeholderTextColor={'rgba(0,0,0,0.5)'} style={[styles.input,]} value={inputs?.telephone ? inputs.telephone?.toString() : ""} onChangeText={text => handleChangeMobile("telephone", text, setInputs)} />
                             </View>
                         </View>

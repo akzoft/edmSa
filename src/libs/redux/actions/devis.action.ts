@@ -5,12 +5,13 @@ import { api } from "../api"
 export const create_devis = (data: FormData, token: string) => async (dispatch: any) => {
     try {
         console.log("create")
+
         dispatch({ type: "d_loading" })
-        const ans = await axios.post(`${api}/devis`, data, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } })
+        const ans = await axios.post(`${api}/devis`, data, { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } })
         console.log(ans.data)
         dispatch({ type: "create_devis_reussie", payload: ans.data })
     } catch (error: any) {
-        console.log(error?.response?.data?._embedded?.errors[0]?.message)
+        console.log("error store devis: ", error?.response?.data?._embedded?.errors[0]?.message || error?.response?.data || error.message)
         dispatch({ type: "errors", payload: error?.response?.data?._embedded?.errors[0]?.message })
     }
 }

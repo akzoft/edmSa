@@ -74,22 +74,42 @@ export function comparaison(a: any, b: any) {
     }
 }
 
-export async function requestUserPermission() {
+export async function requestUserPermission(subject?: any) {
     const authStatus = await messaging().requestPermission()
     const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL
 
-    if (enabled) {
+    if (!subject || subject === '' || subject?.length <= 0) {
+        if (enabled) {
+            if (enabled) {
+                let i = 0
+                if (i === 0) {
+                    i = i + 1
+                    messaging().subscribeToTopic('EDM_News')
+                        .then(() => console.log('Subscribed to topic: EDM_News'));
+                    messaging().subscribeToTopic('EDM_Actus')
+                        .then(() => console.log(`Subscribed to topic: EDM_Actus`));
+                }
+            }
+        }
+    }
+
+    //subscribe to quarterId,villeId,cityId
+    if (subject && (subject !== undefined || subject?.length > 0)) {
         if (enabled) {
             let i = 0
             if (i === 0) {
                 i = i + 1
-                messaging().subscribeToTopic('EDM_News')
-                    .then(() => console.log('Subscribed to topic!'));
+
+                subject?.forEach((sub: any) => {
+                    messaging().subscribeToTopic(`${sub}`)
+                        .then(() => console.log(`Subscribed to topic: ${sub}`)).catch(err => console.log(err));
+                })
             }
         }
     }
+
 }
 
 export const notificationListener = () => {

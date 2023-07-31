@@ -1,7 +1,7 @@
 import { IFactureReq, IFactureStore } from "../../others/models"
 
 
-const initial: IFactureStore = { facture_loading: false, errors: null, facture: null, factures: [], tmp: false, ok: "" }
+const initial: IFactureStore = { facture_loading: false, errors: null, facture: null, factures: [], tmp: false, ok: "", notif: '' }
 interface IAction { type: string; payload: string | boolean | IFactureReq | IFactureReq[] | any }
 
 const factureReducer = (state = initial, action: IAction): IFactureStore => {
@@ -11,9 +11,11 @@ const factureReducer = (state = initial, action: IAction): IFactureStore => {
         case "errors": return { ...state, facture_loading: false, errors: action.payload }
 
 
-        case "search_facture_reussie": return { ...state, facture: action.payload, tmp: true, errors: null, facture_loading: false }
+        case "search_facture_reussie": return { ...state, factures: action.payload, tmp: true, errors: null, facture_loading: false }
 
         case "get_factures_reussie": return { ...state, factures: action.payload, errors: null, facture_loading: false }
+
+        case 'receive_notif': return { ...state, notif: action.payload, errors: null, facture_loading: false }
 
         case "paiement_facture_reussie": return { ...state, ok: action.payload, tmp: true, errors: null, facture_loading: false }
 
